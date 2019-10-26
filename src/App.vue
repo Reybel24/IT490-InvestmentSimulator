@@ -1,9 +1,10 @@
 <template>
   <div id="app">
-    <top-bar />
-    <profile-banner />
-    <tabbed-nav />
-    <router-view></router-view>
+    <top-bar v-if="authenticated" />
+    <profile-banner v-if="authenticated" />
+    <tabbed-nav v-if="authenticated" />
+    
+    <router-view @authenticated="setAuthenticated" ></router-view>
   </div>
 </template>
 
@@ -13,6 +14,8 @@ import TopBar from '@/components/TopBar.vue'
 import TabbedNav from '@/components/TabbedNav.vue'
 import Profile from '@/components/Profile.vue'
 import Invest from '@/components/Invest.vue'
+import Login from '@/components/Login.vue'
+
 
 export default {
   name: 'app',
@@ -21,13 +24,32 @@ export default {
     TopBar,
     TabbedNav,
     Profile,
-    Invest
+    Invest,
+    Login
   },
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      msg: 'Welcome to Your Vue.js App',
+      authenticated: false,
+      mockAccount: {
+        username: "testuser1",
+        password: "pass"
+      }
     }
-  }
+  },
+  mounted() {
+    if(!this.authenticated) {
+        this.$router.replace({ name: "login" });
+      }
+    },
+    methods: {
+      setAuthenticated(status) {
+        this.authenticated = status;
+      },
+      logout() {
+        this.authenticated = false;
+      }
+    }
 }
 </script>
 
