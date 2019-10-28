@@ -56,7 +56,7 @@ CREATE TABLE `currency_trackers` (
   PRIMARY KEY (`tracker_id`),
   KEY `fk_accounts_currency_trackers` (`userid`),
   CONSTRAINT `fk_accounts_currency_trackers` FOREIGN KEY (`userid`) REFERENCES `accounts` (`userid`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -65,6 +65,7 @@ CREATE TABLE `currency_trackers` (
 
 LOCK TABLES `currency_trackers` WRITE;
 /*!40000 ALTER TABLE `currency_trackers` DISABLE KEYS */;
+INSERT INTO `currency_trackers` VALUES (1,1,'BTC'),(1,2,'ETH'),(1,3,'BCH'),(1,4,'LTC'),(1,5,'XRP'),(1,6,'EOS');
 /*!40000 ALTER TABLE `currency_trackers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -76,14 +77,15 @@ DROP TABLE IF EXISTS `investments`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `investments` (
-  `investment_id` int(11) NOT NULL,
+  `investment_id` int(11) NOT NULL AUTO_INCREMENT,
   `portfolio_id` int(11) NOT NULL,
   `base_currency` varchar(255) DEFAULT NULL,
   `target_currency` varchar(255) DEFAULT NULL,
+  `amount_invested` decimal(15,2) DEFAULT NULL,
   PRIMARY KEY (`investment_id`),
   KEY `fk_portfolio_investments` (`portfolio_id`),
   CONSTRAINT `fk_portfolio_investments` FOREIGN KEY (`portfolio_id`) REFERENCES `portfolio` (`portfolio_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -92,6 +94,7 @@ CREATE TABLE `investments` (
 
 LOCK TABLES `investments` WRITE;
 /*!40000 ALTER TABLE `investments` DISABLE KEYS */;
+INSERT INTO `investments` VALUES (1,1,'BTC','USD',50.00);
 /*!40000 ALTER TABLE `investments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -132,4 +135,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-10-27 16:39:02
+-- Dump completed on 2019-10-27 20:27:09
