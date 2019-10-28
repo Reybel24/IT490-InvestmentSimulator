@@ -30,11 +30,13 @@ export default {
   data () {
     return {
       msg: 'Welcome to Your Vue.js App',
-      authenticated: false,
+      authenticated: true,
       mockAccount: {
         username: "testuser1",
-        password: "pass"
-      }
+        password: "pass",
+        currentBalance : 1500,
+      },
+      url: "https://min-api.cryptocompare.com/data/pricemultifull?fsyms=BTC,ETH,DASH&tsyms=USD"
     }
   },
   mounted() {
@@ -48,7 +50,27 @@ export default {
       },
       logout() {
         this.authenticated = false;
-      }
+      },
+      hasEnoughBalance(amt) {
+                if (this.mockAccount.currentBalance >= amt) {
+                    return true;
+                }
+                return false;
+      },
+      addToBalance(amt) {
+        this.mockAccount.currentBalance += amt;
+        this.mockAccount.currentBalance = Math.round(this.mockAccount.currentBalance * 100) / 100
+      },
+      getBalance() {
+        return this.mockAccount.currentBalance;
+      },
+      makeToast() {
+        this.$bvToast.toast(`This is toast number 5`, {
+          title: 'BootstrapVue Toast',
+          autoHideDelay: 5000,
+          appendToast: append
+        })
+      },
     }
 }
 </script>

@@ -5,13 +5,13 @@
           <img src="@/assets/img/profile_avatar_1.jpg" class="avatar" />
         </div>
         <div class="info-top">
-          <span class="name">Reybel Candelaria</span>
+          <span class="name">Reybel Candelaria</span> <font-awesome-icon icon="user-secret"></font-awesome-icon>
           <span class="badge text-white">NOVICE INVESTOR</span>
         </div>
         <div class="info-bottom">
           <div class="data-display">
             <img src="@/assets/img/profits.png" class="img-icon" />
-            <span class="text-small">537.48</span>
+            <span class="text-small">{{ this.$parent.mockAccount.currentBalance }}</span>
           </div>
         </div>
       </div>

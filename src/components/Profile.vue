@@ -1,6 +1,17 @@
 <template>
     <div id="container">
-        <h3 class="simple-text">Your profile</h3>
+        <h3 class="simple-text">YOUR PORTFOLIO</h3>
+
+        <b-card-group deck>
+            <b-card bg-variant="success" text-variant="white" header="AVAILABLE BALANCE" class="text-center">
+                <b-card-text>$47.50</b-card-text>
+            </b-card>
+
+            <b-card bg-variant="primary" text-variant="white" header="PORTFOLIO VALUE" class="text-center">
+                <b-card-text>$7.13</b-card-text>
+            </b-card>
+        
+    </b-card-group>
     </div>
 </template>
 
@@ -8,7 +19,6 @@
     export default {
         name: 'top-bar',
         props: {
-            employees: Array,
         },
     }
 </script>
