@@ -11,13 +11,16 @@
         >
         
             <template slot="actions" slot-scope="data">
-                <b-button size="sm button-buy" @click="buyCrypto(data.item.symbol)" class="mr-1">
+                <b-button size="sm" @click="buyCrypto(data.item.symbol)" class="mr-1 button-buy">
                     Trade
                 </b-button>
             </template>
         </b-table>
 
         </div>
+
+          
+
     </div>
 </template>
 
@@ -103,6 +106,7 @@ const axios = require('axios')
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css?family=Muli&display=swap');
   #container {
     width: 100%;
     height: 50px;
@@ -116,6 +120,8 @@ const axios = require('axios')
   }
   .table-index {
       margin-left: 5%;
+      font-size: 17px;
+      font-family: 'Muli', sans-serif;
   }
   .button-buy {
       width: 80%;

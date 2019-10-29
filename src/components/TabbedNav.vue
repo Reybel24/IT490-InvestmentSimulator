@@ -43,6 +43,10 @@
     border: dashed 4px #d5d5d5;
     display: inline-block;
     margin-left: 35px;
+    opacity: .5;
+  }
+  .tab-button:hover {
+    opacity: 1;
   }
   .tab-icon {
     width: 28px;
@@ -53,7 +57,7 @@
     vertical-align: top;
   }
   .tab-text {
-    color: #d5d5d5;
+    color: #7e7e7e;
     font-size: 20px;
     padding-left: 10px;
     display: inline-block;

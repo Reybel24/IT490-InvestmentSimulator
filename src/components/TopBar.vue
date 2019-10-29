@@ -14,10 +14,12 @@
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css?family=Muli&display=swap');
   #container {
     width: 100%;
     height: 50px;
     background-color: #373737;
+    font-family: 'Muli', sans-serif;
   }
   .logout {
       color: white;
@@ -25,5 +27,6 @@
       padding-right: 28px;
       padding-top: 10px;
       font-size: 16px;
+      font-family: 'Muli', sans-serif;
   }
 </style>
