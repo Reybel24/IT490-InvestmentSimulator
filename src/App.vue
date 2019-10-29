@@ -45,22 +45,26 @@ export default {
         this.$router.replace({ name: "login" });
       }
     },
-    methods: {
-      setAuthenticated(status) {
-        this.authenticated = status;
-      },
-      logout() {
-        this.authenticated = false;
-      },
-      hasEnoughBalance(amt) {
-                if (this.mockAccount.currentBalance >= amt) {
-                    return true;
-                }
-                return false;
+  methods: {
+    setAuthenticated(status) {
+      this.authenticated = status;
+    },
+    logout() {
+      this.authenticated = false;
+    },
+    hasEnoughBalance(amt) {
+      if (this.mockAccount.currentBalance >= amt) {
+        return true;
+      }
+      return false;
       },
       addToBalance(amt) {
         this.mockAccount.currentBalance += amt;
         this.mockAccount.currentBalance = Math.round(this.mockAccount.currentBalance * 100) / 100
+
+        // Fire event
+        //console.log("emiting event");
+        this.$vueEventBus.$emit('balance-updated', this.mockAccount.currentBalance)
       },
       getBalance() {
         return this.mockAccount.currentBalance;

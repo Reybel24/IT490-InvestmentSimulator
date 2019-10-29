@@ -74,7 +74,7 @@ const axios = require('axios')
                 this.$root.$emit('bv::show::modal', this.infoModal.id, button)
             },
             buyCrypto(data_symbol) {
-                console.log(data_symbol);
+                //console.log(data_symbol);
 
                 // Build query and get price
                 let url = "https://min-api.cryptocompare.com/data/price?fsym=" + data_symbol + "&tsyms=USD";
@@ -84,7 +84,7 @@ const axios = require('axios')
                     
                     if (this.$parent.hasEnoughBalance(price)) {
                         this.$parent.addToBalance(-price);
-                        console.log("Purchased " + data_symbol + " for " + price);
+                        //console.log("Purchased " + data_symbol + " for " + price);
                         console.log("New balance: " + this.$parent.getBalance());
                         this.$toasted.global.purchase_complete({
                             message : 'PURCHASED 1 ' + data_symbol + ' for $' + price

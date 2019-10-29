@@ -6,6 +6,7 @@ import VueRouter from 'vue-router'
 import "bootstrap/dist/css/bootstrap.min.css"
 import "bootstrap-vue/dist/bootstrap-vue.css"
 import routes from './routes';
+import { store } from "./store/store.js";
 
 // Stylish
 Vue.use(BootstrapVue);
@@ -21,12 +22,18 @@ const router = new VueRouter({mode: 'history', routes});
 //library.add(faUserSecret)
 //Vue.component('font-awesome-icon', FontAwesomeIcon)
 
-// Important
+// Event bus to allow for events
+Vue.prototype.$vueEventBus = new Vue();
+
+// Main instance
 new Vue({
   router,
-  render: h => h(App)
+  store,
+  render: h => h(App),
 }).$mount('#app')
 
+
+// Toast
 // options to the toast
 let options = {
   type: "success",

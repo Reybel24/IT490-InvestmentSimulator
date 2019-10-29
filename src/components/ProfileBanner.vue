@@ -5,7 +5,7 @@
           <img src="@/assets/img/profile_avatar_1.jpg" class="avatar" />
         </div>
         <div class="info-top">
-          <span class="name">Reybel Candelaria</span> <font-awesome-icon icon="user-secret"></font-awesome-icon>
+          <span class="name">Reybel Candelaria</span>
           <span class="badge text-white">NOVICE INVESTOR</span>
         </div>
         <div class="info-bottom">
@@ -19,11 +19,44 @@
 </template>
 
 <script>
+const axios = require('axios')
     export default {
         name: 'profile-banner',
         props: {
             employees: Array,
         },
+        components: {
+        },
+        methods: {
+          updateBalance(payload) {
+            // Endpoint
+            let scriptURL_auth = "http://localhost:3307/sim/backend/GetUserData.php";
+            
+            // Payload
+            const options = {
+              method: 'POST',
+              headers: { 'content-type': 'application/form-data' },
+              data: {
+                username: 'testUser1',
+                password: 'myPassword123'
+              },
+              url: scriptURL_auth,
+            };
+
+            // Send
+            axios(options).then(response => {
+              console.log(response.data);
+            });
+          },
+        },
+        created() {
+            // Subscribe to relevant events
+            this.$vueEventBus.$on('balance-updated', this.updateBalance);
+          },
+          beforeDestroy() {
+            // Unscubscribe events
+            this.$vueEventBus.$off('balance-updated');
+          }
     }
 </script>
 
