@@ -36,7 +36,8 @@ export default {
         password: "pass",
         currentBalance : 1500,
       },
-      url: "https://min-api.cryptocompare.com/data/pricemultifull?fsyms=BTC,ETH,DASH&tsyms=USD"
+      //url: "https://min-api.cryptocompare.com/data/pricemultifull?fsyms=BTC,ETH,DASH&tsyms=USD"
+      url: "https://min-api.cryptocompare.com/data/top/totalvolfull?limit=75&tsym=USD"
     }
   },
   mounted() {
