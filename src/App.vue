@@ -36,8 +36,7 @@ export default {
         password: "pass",
         currentBalance : 1500,
       },
-      //url: "https://min-api.cryptocompare.com/data/pricemultifull?fsyms=BTC,ETH,DASH&tsyms=USD"
-      url: "https://min-api.cryptocompare.com/data/top/totalvolfull?limit=75&tsym=USD"
+      url: "https://min-api.cryptocompare.com/data/top/totalvolfull?limit=75&tsym=USD",
     }
   },
   mounted() {
@@ -57,26 +56,29 @@ export default {
         return true;
       }
       return false;
-      },
-      addToBalance(amt) {
-        this.mockAccount.currentBalance += amt;
-        this.mockAccount.currentBalance = Math.round(this.mockAccount.currentBalance * 100) / 100
+    },
+    addToBalance(amt) {
+      this.mockAccount.currentBalance += amt;
+      this.mockAccount.currentBalance = Math.round(this.mockAccount.currentBalance * 100) / 100
 
-        // Fire event
-        //console.log("emiting event");
-        this.$vueEventBus.$emit('balance-updated', this.mockAccount.currentBalance)
-      },
-      getBalance() {
-        return this.mockAccount.currentBalance;
-      },
-      makeToast() {
-        this.$bvToast.toast(`This is toast number 5`, {
-          title: 'BootstrapVue Toast',
-          autoHideDelay: 5000,
-          appendToast: append
-        })
-      },
-    }
+      // Update in database
+        
+
+      // Fire event
+      //console.log("emiting event");
+      this.$vueEventBus.$emit('balance-updated', this.mockAccount.currentBalance)
+    },
+    getBalance() {
+      return this.mockAccount.currentBalance;
+    },
+    makeToast() {
+      this.$bvToast.toast(`This is toast number 5`, {
+        title: 'BootstrapVue Toast',
+        autoHideDelay: 5000,
+        appendToast: append
+      })
+    },
+  }
 }
 </script>
 
