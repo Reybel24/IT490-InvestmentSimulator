@@ -39,7 +39,7 @@ function requestProcessor($request)
 			//return doValidate($request['sessionId']);
 		case "error_log":
 			echo "sending error from ".$request['machine'];
-			$returnCode = writeLogMessage($request['time'],$request['error_message'], $request['machine_name'])
+			$returnCode = writeLogMessage($request['time'],$request['error_message'], $request['machine_name']);
 				//return doValidate($request['sessionId']);
   }
 
