@@ -29,14 +29,16 @@ const axios = require('axios')
         },
         methods: {
           updateBalance(payload) {
+            console.log(this.$store.getters.getUserBalance);
             // Endpoint
-            let scriptURL_auth = "http://localhost:3307/sim/backend/GetUserData.php";
+            let scriptURL_auth = this.$store.state.url_backend_base + "testRabbitMQClient.php";
             
             // Payload
             const options = {
               method: 'POST',
               headers: { 'content-type': 'application/form-data' },
               data: {
+                type: 'login',
                 username: 'testUser1',
                 password: 'myPassword123'
               },
