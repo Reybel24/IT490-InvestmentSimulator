@@ -16,7 +16,7 @@ import Profile from '@/components/Profile.vue'
 import Invest from '@/components/Invest.vue'
 import Login from '@/components/Login.vue'
 
-
+const axios = require('axios')
 export default {
   name: 'app',
   components: {
@@ -52,21 +52,20 @@ export default {
       this.authenticated = false;
     },
     hasEnoughBalance(amt) {
-      if (this.mockAccount.currentBalance >= amt) {
+      if (this.$store.state.balance >= amt) {
         return true;
       }
       return false;
     },
     addToBalance(amt) {
-      this.mockAccount.currentBalance += amt;
-      this.mockAccount.currentBalance = Math.round(this.mockAccount.currentBalance * 100) / 100
+      //this.mockAccount.currentBalance += amt;
+      //this.mockAccount.currentBalance = Math.round(this.mockAccount.currentBalance * 100) / 100
 
-      // Update in database
-        
+      // Perform a transaction
+      this.$store.commit('transaction', amt);
 
       // Fire event
-      //console.log("emiting event");
-      this.$vueEventBus.$emit('balance-updated', this.mockAccount.currentBalance)
+      this.$vueEventBus.$emit('balance-updated', amt)
     },
     getBalance() {
       return this.mockAccount.currentBalance;

@@ -30,7 +30,7 @@ $request = json_decode($request, false);
 # print_r($response);
 
 // Temporarily run database queries here
-function getAccountDetails()
+function getAccountDetails($userID)
 {
     // Get account details from database and add to respoonse
     return array(
@@ -39,10 +39,33 @@ function getAccountDetails()
     );
 }
 
+function makeTransaction($userID, $trans_amt)
+{
+    $user_balance = 500; // grabbed from database
+    $new_balance = $user_balance;
+    $wasSuccess = false;
+    
+    if ($trans_amt <= $user_balance)
+    {
+        $new_balance = $user_balance + $trans_amt;
+        $wasSuccess = true;
+    }
+    else
+    {
+        $new_balance = $user_balance;
+        $wasSuccess = false;
+    }
+    
+    return array(
+        'wasSuccess' => $wasSuccess,
+        'new_balance' => $new_balance,
+    );
+}
+
 // tempoiarily placed here
 function requestProcessor($request)
 {
-    $returnCode = null;
+    $returnCode = 0;
     $response = [];
     $message = "";
 
@@ -70,11 +93,18 @@ function requestProcessor($request)
             case "account":
                 $returnCode = 0;
                 $message = "request recieved successfully";
-                $payload = getAccountDetails();
+                $payload = getAccountDetails($request->userID);
                 break;
 
             case "profileValue":
                 // do stuff here
+                break;
+            
+            case "transaction":
+                // do stuff here
+                $returnCode = 0;
+                $message = "request recieved successfully";
+                $payload = makeTransaction($request->userID, $request->amount);
                 break;
 
             // Session Validation
