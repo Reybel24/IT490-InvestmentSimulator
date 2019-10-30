@@ -8,9 +8,9 @@ $client = new rabbitMQClient("testRabbitMQ.ini","testServer");
 
 $request = array();
 $request['type'] = "error_log";
-$request['time'] = date("Y-M-D h:i:s", time());
+$request['time'] = date("m-d-Y h:i:s", time());
+$request['machine_name'] = "Tricia's machine";
 $request['error_message'] = $argv[1];
-$request['machine'] = "Tricia's machine";
 $response = $client->send_request($request);
 //$response = $client->publish($request);
 
