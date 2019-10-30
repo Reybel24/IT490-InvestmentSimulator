@@ -85,13 +85,13 @@ const axios = require('axios')
                     if (this.$parent.hasEnoughBalance(price)) {
                         this.$parent.addToBalance(-price);
                         //console.log("Purchased " + data_symbol + " for " + price);
-                        console.log("New balance: " + this.$parent.getBalance());
+                        //console.log("New balance: " + this.$parent.getBalance());
                         this.$toasted.global.purchase_complete({
                             message : 'PURCHASED 1 ' + data_symbol + ' for $' + price
                         });
                     }
                     else {
-                        console.log("Not enough money for ");
+                        console.log("Not enough money");
                         this.$toasted.global.fail({
                             message : 'NOT ENOUGH MONEY'
                         });

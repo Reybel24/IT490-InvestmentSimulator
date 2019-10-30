@@ -11,7 +11,7 @@
         <div class="info-bottom">
           <div class="data-display">
             <img src="@/assets/img/profits.png" class="img-icon" />
-            <span class="text-small">{{ this.$parent.mockAccount.currentBalance }}</span>
+            <span class="text-small">{{ this.$store.state.balance }}</span>
           </div>
         </div>
       </div>
@@ -25,30 +25,15 @@ const axios = require('axios')
         props: {
             employees: Array,
         },
+        data () {
+          return {
+          }
+        },
         components: {
         },
         methods: {
           updateBalance(payload) {
-            console.log(this.$store.getters.getUserBalance);
-            // Endpoint
-            let scriptURL_auth = this.$store.state.url_backend_base + "testRabbitMQClient.php";
             
-            // Payload
-            const options = {
-              method: 'POST',
-              headers: { 'content-type': 'application/form-data' },
-              data: {
-                type: 'account',
-                username: 'testUser1',
-                password: 'myPassword123'
-              },
-              url: scriptURL_auth,
-            };
-
-            // Send
-            axios(options).then(response => {
-              console.log(response.data);
-            });
           },
         },
         created() {
