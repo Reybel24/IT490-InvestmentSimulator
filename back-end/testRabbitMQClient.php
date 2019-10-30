@@ -15,7 +15,10 @@ require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
 
 // Grab POST data sent by axios in front-end
-$data = file_get_contents('php://input');
+$request = file_get_contents('php://input');
+
+// Decode from JSON into object
+$request = json_decode($request, false);
 
 // Make connection as client
 # $client = new rabbitMQClient("testRabbitMQ.ini","testServer");
@@ -26,5 +29,69 @@ $data = file_get_contents('php://input');
 # $response = $client->send_request($data);
 # print_r($response);
 
-// temp - return this
-echo($data);
+// Temporarily run database queries here
+function getAccountDetails()
+{
+    // Get account details from database and add to respoonse
+    return array(
+        'fullName' => "Bob Jimbilly",
+        'current_balance' => 578,
+    );
+}
+
+// tempoiarily placed here
+function requestProcessor($request)
+{
+    $returnCode = null;
+    $response = [];
+    $message = "";
+
+    // Is there a request type?
+    if(!isset($request->type))
+    {
+        $returnCode = "1";
+        $message = "error";
+    }
+    else
+    {
+        // Perform appropriate action depending on type
+        switch ($request->type)
+        {
+            // Authenticate
+            case "login":
+	            //echo "Login Request Sent...\n";
+			    //$returnCode = 0;
+			    $returnCode = doLogin($request->username, $request->password);
+			    //echo $returnCode;
+                //return doLogin($request['username'],$request['password']);
+                break;
+  
+            // Account details
+            case "account":
+                $returnCode = 0;
+                $message = "request recieved successfully";
+                $payload = getAccountDetails();
+                break;
+
+            case "profileValue":
+                // do stuff here
+                break;
+
+            // Session Validation
+            case "validate_session":
+                //return doValidate($request['sessionId']);
+                break;
+
+            default:
+                // do nothing
+                break;
+        }
+    }
+    
+    // Response
+    $testResponse = array("returnCode" => $returnCode, 'message'=> $message, 'payload' => $payload);
+    echo json_encode($testResponse);
+}
+
+// Process data
+requestProcessor($request);

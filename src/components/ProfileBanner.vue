@@ -38,7 +38,7 @@ const axios = require('axios')
               method: 'POST',
               headers: { 'content-type': 'application/form-data' },
               data: {
-                type: 'login',
+                type: 'account',
                 username: 'testUser1',
                 password: 'myPassword123'
               },
