@@ -81,17 +81,17 @@ const axios = require('axios')
                 let price = 0;
                 axios.get(url).then(response => {
                     price = response.data.USD
-                    
-                    if (this.$parent.hasEnoughBalance(price)) {
-                        this.$parent.addToBalance(-price);
-                        //console.log("Purchased " + data_symbol + " for " + price);
-                        //console.log("New balance: " + this.$parent.getBalance());
+                    if (this.$store.getters.haveEnough(price)) {
+                        // Make a transaction
+                        this.$store.dispatch("doTransaction", price);
+
+                        // Toast notification
                         this.$toasted.global.purchase_complete({
                             message : 'PURCHASED 1 ' + data_symbol + ' for $' + price
                         });
                     }
                     else {
-                        console.log("Not enough money");
+                        //console.log("Not enough money");
                         this.$toasted.global.fail({
                             message : 'NOT ENOUGH MONEY'
                         });
@@ -106,7 +106,6 @@ const axios = require('axios')
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css?family=Muli&display=swap');
   #container {
     width: 100%;
     height: 50px;
@@ -117,11 +116,12 @@ const axios = require('axios')
       color: grey;
       padding-left: 67px;
       padding-top: 30px;
+      font-family: 'Overpass', sans-serif;
   }
   .table-index {
       margin-left: 5%;
       font-size: 17px;
-      font-family: 'Muli', sans-serif;
+      font-family: 'Overpass', sans-serif;
   }
   .button-buy {
       width: 80%;

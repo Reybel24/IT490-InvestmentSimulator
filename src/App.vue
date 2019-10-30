@@ -1,24 +1,24 @@
 <template>
   <div id="app">
-    <top-bar v-if="authenticated" />
-    <profile-banner v-if="authenticated" />
-    <tabbed-nav v-if="authenticated" />
-    
-    <router-view @authenticated="setAuthenticated" ></router-view>
+    <top-bar v-if="authenticated"/>
+    <profile-banner v-if="authenticated"/>
+    <tabbed-nav v-if="authenticated"/>
+
+    <router-view @authenticated="setAuthenticated"></router-view>
   </div>
 </template>
 
 <script>
-import ProfileBanner from '@/components/ProfileBanner.vue'
-import TopBar from '@/components/TopBar.vue'
-import TabbedNav from '@/components/TabbedNav.vue'
-import Profile from '@/components/Profile.vue'
-import Invest from '@/components/Invest.vue'
-import Login from '@/components/Login.vue'
+import ProfileBanner from "@/components/ProfileBanner.vue";
+import TopBar from "@/components/TopBar.vue";
+import TabbedNav from "@/components/TabbedNav.vue";
+import Profile from "@/components/Profile.vue";
+import Invest from "@/components/Invest.vue";
+import Login from "@/components/Login.vue";
 
-const axios = require('axios')
+const axios = require("axios");
 export default {
-  name: 'app',
+  name: "app",
   components: {
     ProfileBanner,
     TopBar,
@@ -27,23 +27,27 @@ export default {
     Invest,
     Login
   },
-  data () {
+  data() {
     return {
-      msg: 'Welcome to Your Vue.js App',
+      msg: "Welcome to Your Vue.js App",
       authenticated: true,
       mockAccount: {
         username: "testuser1",
         password: "pass",
-        currentBalance : 1500,
+        currentBalance: 1500
       },
-      url: "https://min-api.cryptocompare.com/data/top/totalvolfull?limit=75&tsym=USD",
-    }
+      url:
+        "https://min-api.cryptocompare.com/data/top/totalvolfull?limit=75&tsym=USD"
+    };
   },
   mounted() {
-    if(!this.authenticated) {
-        this.$router.replace({ name: "login" });
-      }
-    },
+    if (!this.authenticated) {
+      this.$router.replace({ name: "login" });
+    }
+
+    // Get user data from database and set it locally
+    this.$store.dispatch('setUserFullName');
+  },
   methods: {
     setAuthenticated(status) {
       this.authenticated = status;
@@ -51,39 +55,21 @@ export default {
     logout() {
       this.authenticated = false;
     },
-    hasEnoughBalance(amt) {
-      if (this.$store.state.balance >= amt) {
-        return true;
-      }
-      return false;
-    },
-    addToBalance(amt) {
-      //this.mockAccount.currentBalance += amt;
-      //this.mockAccount.currentBalance = Math.round(this.mockAccount.currentBalance * 100) / 100
-
-      // Perform a transaction
-      this.$store.commit('transaction', amt);
-
-      // Fire event
-      this.$vueEventBus.$emit('balance-updated', amt)
-    },
-    getBalance() {
-      return this.mockAccount.currentBalance;
-    },
     makeToast() {
       this.$bvToast.toast(`This is toast number 5`, {
-        title: 'BootstrapVue Toast',
+        title: "BootstrapVue Toast",
         autoHideDelay: 5000,
         appendToast: append
-      })
-    },
+      });
+    }
   }
-}
+};
 </script>
 
 <style>
+@import url('https://fonts.googleapis.com/css?family=Overpass:400,800&display=swap');
 #app-2 {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
@@ -91,7 +77,8 @@ export default {
   margin-top: 60px;
 }
 
-h1, h2 {
+h1,
+h2 {
   font-weight: normal;
 }
 
