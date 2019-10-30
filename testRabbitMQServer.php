@@ -4,6 +4,7 @@ require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
 require_once('login.php.inc');
+require_once('logError.php');
 //require_once('funwithcurl.php');
 function doLogin($username,$password)
 {
@@ -36,6 +37,10 @@ function requestProcessor($request)
 
     case "validate_session":
 			//return doValidate($request['sessionId']);
+		case "error_log":
+			echo "sending error from ".$request['machine'];
+			$returnCode = writeLogMessage($request['time'],$request['error_message'], $request['machine_name'])
+				//return doValidate($request['sessionId']);
   }
 
   return array("returnCode" => $returnCode, 'message'=>"Server received request and processed");
