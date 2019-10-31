@@ -1,6 +1,7 @@
 <template>
     <div id="container">
         <h3 class="simple-text">Invest</h3>
+        <trade-popup v-if="showPopup" :coinData="focusedCoin"></trade-popup>
 
         <div class="row">
         <b-table v-if="this.isDataReady"
@@ -11,7 +12,7 @@
         >
         
             <template slot="actions" slot-scope="data">
-                <b-button size="sm" @click="buyCrypto(data.item.symbol)" class="mr-1 button-buy">
+                <b-button size="sm" @click="trade(data.item)" class="mr-1 button-buy">
                     Trade
                 </b-button>
             </template>
@@ -25,10 +26,15 @@
 </template>
 
 <script>
+import TradePopup from "@/components/TradePopup.vue";
+
 const axios = require('axios')
     export default {
         name: 'invest',
         props: {
+        },
+        components: {
+            TradePopup
         },
         data () {
             return {
@@ -41,6 +47,8 @@ const axios = require('axios')
                     { key: 'actions', label: 'Trade' },
                 ],
                 isDataReady: false,
+                focusedCoin: "",
+                showPopup: false,
             }
         },
         methods: {
@@ -98,6 +106,11 @@ const axios = require('axios')
                     }
                 });
             },
+            trade(coin) {
+                console.log("investing for " + coin.symbol);
+                this.focusedCoin = coin;
+                this.showPopup = true;
+            }
         },
         created: function () {
             this.buildDataChart();

@@ -39,7 +39,7 @@ function transaction(amt) {
             },
             url: store.state.url_backend_base + "testRabbitMQClient.php"
         };
-console.log("a");
+        
         // Send
         axios(options).then(response => {
             //console.log("had enough for transaction: " + response.data.payload.wasSuccess);
