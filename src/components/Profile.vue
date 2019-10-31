@@ -10,8 +10,11 @@
             <b-card bg-variant="primary" text-variant="white" header="PORTFOLIO VALUE" class="text-center">
                 <b-card-text>$7.13</b-card-text>
             </b-card>
-        
     </b-card-group>
+
+    <b-button size="sm" @click="clickMe()" class="mr-1 button-buy">
+                    Test
+                </b-button>
     </div>
 </template>
 
@@ -19,6 +22,11 @@
     export default {
         name: 'top-bar',
         props: {
+        },
+        methods: {
+            clickMe() {
+                this.$store.dispatch('doTest')
+            }
         },
     }
 </script>

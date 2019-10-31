@@ -34,7 +34,7 @@ function getAccountDetails($userID)
 {
     // Get account details from database and add to respoonse
     return array(
-        'fullName' => "Bob Jimbilly",
+        'fullName' => "Thomas Slenderman",
         'current_balance' => 578,
     );
 }
@@ -59,6 +59,16 @@ function makeTransaction($userID, $trans_amt)
     return array(
         'wasSuccess' => $wasSuccess,
         'new_balance' => $new_balance,
+    );
+}
+
+function testQuery($userID)
+{
+    $nameFromDB = "test name"; # replace this with database query
+
+    return array(
+        'fullName' => $nameFromDB,
+        'current_balance' => 89,
     );
 }
 
@@ -110,6 +120,12 @@ function requestProcessor($request)
             // Session Validation
             case "validate_session":
                 //return doValidate($request['sessionId']);
+                break;
+
+            case "test":
+                $returnCode = 0;
+                $message = "request recieved successfully";
+                $payload = testQuery($request->userID);
                 break;
 
             default:
