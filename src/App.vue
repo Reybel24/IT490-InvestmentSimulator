@@ -15,6 +15,8 @@ import TabbedNav from "@/components/TabbedNav.vue";
 import Profile from "@/components/Profile.vue";
 import Invest from "@/components/Invest.vue";
 import Login from "@/components/Login.vue";
+import Register from '@/components/Register.vue';
+
 
 const axios = require("axios");
 export default {
@@ -25,7 +27,8 @@ export default {
     TabbedNav,
     Profile,
     Invest,
-    Login
+    Login,
+    Register,
   },
   data() {
     return {
@@ -41,12 +44,20 @@ export default {
     };
   },
   mounted() {
+
+//Taj  
+    if(this.accountCreate){
+      this.$router.replace({name: "register"});
+//Taj Added
+
     if (!this.authenticated) {
       this.$router.replace({ name: "login" });
     }
+  }
 
     // Get user data from database and set it locally
     this.$store.dispatch('setUserFullName');
+
   },
   methods: {
     setAuthenticated(status) {
