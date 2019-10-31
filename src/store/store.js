@@ -39,12 +39,31 @@ function transaction(amt) {
             },
             url: store.state.url_backend_base + "testRabbitMQClient.php"
         };
-
+console.log("a");
         // Send
         axios(options).then(response => {
             //console.log("had enough for transaction: " + response.data.payload.wasSuccess);
             //console.log("transaction successful: " + response.data.payload.wasSuccess);
             resolve(response.data.payload.new_balance);
+        });
+    });
+}
+
+function testRequest() {
+    return new Promise(function (resolve) {
+        const options = {
+            method: 'POST',
+            headers: { 'content-type': 'application/form-data' },
+            data: {
+                type: 'test',
+                userID: 'testUserID_1',
+            },
+            url: store.state.url_backend_base + "testRabbitMQClient.php"
+        };
+
+        // Send
+        axios(options).then(response => {
+            resolve(response.data.payload);
         });
     });
 }
@@ -56,7 +75,8 @@ export const store = new Vuex.Store({
             id: "",
             fullName: "",
             balance: 500,
-            badge: "EXPERT INVESTOR"
+            badge: "EXPERT INVESTOR",
+            testData: ""
         },
     },
     mutations: {
@@ -67,8 +87,11 @@ export const store = new Vuex.Store({
         setBalance(state, payload) {
             //console.log("transaction: " + payload);
             state.user_data.balance = payload;
+        },
+        setTestData(state, payload) {
+            //console.log("transaction: " + payload);
+            state.user_data.testData = payload;
         }
-        
     },
     getters: {
         getUserBalance: state => {
@@ -90,6 +113,13 @@ export const store = new Vuex.Store({
             transaction(amt).then(response => {
                 // Update property
                 commit('setBalance', response);
+            })
+        },
+        doTest({ commit }) {
+            testRequest().then(response => {
+                // Update property
+                console.log(response);
+                commit('setTestData', response);
             })
         }
     }
