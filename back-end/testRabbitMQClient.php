@@ -30,18 +30,94 @@ $request = json_decode($request, false);
 # print_r($response);
 
 // Temporarily run database queries here
+
 function getAccountDetails($userID)
 {
-    // Get account details from database and add to respoonse
-    return array(
-        'fullName' => "Thomas Slenderman",
-        'current_balance' => 578,
-    );
+    //MUST CHANGE DATABASE CREDENTIALS
+    $db = mysqli_connect("127.0.0.1", "root", "12345", "homedb");
+    if (!$db) {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+    
+    $sql= "SELECT accounts.userid, accounts.username, accounts.fname, accounts.lname, 
+    portfolio.available_balance 
+    FROM accounts LEFT JOIN portfolio on  accounts.userid = portfolio.portfolio_id 
+    WHERE accounts.userid='$userID'";
+  
+
+$result = mysqli_query($db, $sql);
+
+if (mysqli_num_rows($result) > 0) {
+
+
+    while($row = mysqli_fetch_assoc($result)) {
+      
+
+        //To show output from for account details
+
+        echo "userid: " . $row["userid"].
+         "username: " . $row["username"]. 
+         "First name: " . $row["fname"].
+        "Last Name: " . $row["lname"]. 
+        "Balance " . $row["available_balance"]. 
+        "<br>";
+
+      
+// Variables for array
+       $userID= $row['userid'];
+        $username = $row['username'];
+        $fname = $row['fname'];
+        $lname = $row['lname'];
+        $fullname = $row['fname']." ".$row['lname'];
+        $balance = $row['available_balance'];
+
+    }
 }
+else {
+    echo "0 results";
+}
+    //Get account details from database and add to respoonse
+    return array(
+        "fullName" => "$fullname",
+        "userID" => "$userID",
+        "username" => "$username",
+        "current_balance" => "$balance",
+   
+    );
+
+ mysqli_close($db);
+
+}
+////To test
+// $data= getAccountDetails(1);
+// $data;
+
+
+
 
 function makeTransaction($userID, $trans_amt)
 {
-    $user_balance = 500; // grabbed from database
+      //MUST CHANGE DATABASE CREDENTIALS
+    $db = mysqli_connect("127.0.0.1", "root", "12345", "homedb");
+    if (!$db) {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+
+$sql= "SELECT * from portfolio Where userid='$userID'";
+
+    $result = mysqli_query($db, $sql);
+
+if (mysqli_num_rows($result) > 0) {
+
+    while($row = mysqli_fetch_assoc($result)) {
+
+        $user_balance= $row['available_balance'];
+
+                 
+        echo "$user_balance";
+        echo "<br>";
+        
+
     $new_balance = $user_balance;
     $wasSuccess = false;
     
@@ -49,28 +125,102 @@ function makeTransaction($userID, $trans_amt)
     {
         $new_balance = $user_balance + $trans_amt;
         $wasSuccess = true;
+
+        $sql2= "UPDATE portfolio SET available_balance= $new_balance 
+        WHERE userid= '$userID'";
+        
+         $result2 = mysqli_query($db, $sql2);
+
+         echo " New Balance:";
+         echo "<br>";
+         echo "$new_balance";
     }
     else
     {
         $new_balance = $user_balance;
         $wasSuccess = false;
+
+        $sql2= "UPDATE portfolio SET available_balance= $new_balance 
+        WHERE userid= '$userID'";
+        $result2 = mysqli_query($db, $sql2);
     }
-    
-    return array(
-        'wasSuccess' => $wasSuccess,
-        'new_balance' => $new_balance,
-    );
+
+
+    }
 }
+else {
+    echo "0 results";
+}
+
+return array(
+    'wasSuccess' => $wasSuccess,
+    'new_balance' => $new_balance,
+);
+   
+
+ mysqli_close($db);
+
+}
+
+////To Test
+
+// makeTransaction(1,100);
+
+
+   
 
 function testQuery($userID)
 {
-    $nameFromDB = "test name"; # replace this with database query
+     //MUST CHANGE DATABASE CREDENTIALS       
+    $db = mysqli_connect("127.0.0.1", "root", "12345", "homedb");
+            if (!$db) {
+                die("Connection failed: " . mysqli_connect_error());
+            }
+            
+            $sql= "SELECT accounts.userid, accounts.username, accounts.fname, accounts.lname, 
+            portfolio.available_balance 
+            FROM accounts LEFT JOIN portfolio on  accounts.userid = portfolio.portfolio_id 
+            WHERE accounts.userid='$userID'";
+        
+        $result = mysqli_query($db, $sql);
+        
+        if (mysqli_num_rows($result) > 0) {
+        
+        
+            while($row = mysqli_fetch_assoc($result)) {
+              
+                //To show output from for account details
+    
+                echo "fullname: " . $row["fname"]. " "
+                . $row["lname"]. " ". 
+                "Balance " . $row["available_balance"].
+                "<br>";
+        
+        
+        // Variables for array
+        $nameFromDB = $row['fname']." ".$row['lname'];
+        $balance = $row['available_balance'];
 
-    return array(
-        'fullName' => $nameFromDB,
-        'current_balance' => 89,
-    );
-}
+        
+            }
+        }
+        else {
+            echo "0 results";
+        }
+            //Get account details from database and add to respoonse
+            return array(
+                'fullName' => $nameFromDB,
+                'current_balance' => $balance,
+            );
+        
+            mysqli_close($db);
+        
+        }
+
+////  To test       
+// testQuery(1);
+
+
 
 // tempoiarily placed here
 function requestProcessor($request)
@@ -141,3 +291,7 @@ function requestProcessor($request)
 
 // Process data
 requestProcessor($request);
+
+
+
+?>
