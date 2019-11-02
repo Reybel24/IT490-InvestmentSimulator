@@ -39,7 +39,7 @@ function transaction(amt) {
             },
             url: store.state.url_backend_base + "testRabbitMQClient.php"
         };
-console.log("a");
+
         // Send
         axios(options).then(response => {
             //console.log("had enough for transaction: " + response.data.payload.wasSuccess);
@@ -58,7 +58,7 @@ function testRequest() {
                 type: 'test',
                 userID: 'testUserID_1',
             },
-            url: store.state.url_backend_base + "testRabbitMQClient.php"
+            url: store.state.url_backend_base + "testRabbitMQClient.php",
         };
 
         // Send
@@ -78,6 +78,11 @@ export const store = new Vuex.Store({
             badge: "EXPERT INVESTOR",
             testData: ""
         },
+        exchanges: {
+            a: "https://min-api.cryptocompare.com/data/top/totalvolfull?limit=75&tsym=USD&e=Kraken",
+            b: "https://min-api.cryptocompare.com/data/top/totalvolfull?limit=75&tsym=USD&e=LakeBTC",
+            c: "https://min-api.cryptocompare.com/data/top/totalvolfull?limit=75&tsym=USD&e=Coinmate",
+        }
     },
     mutations: {
         setUserFullName(state, payload) {
