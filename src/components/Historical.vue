@@ -2,38 +2,27 @@
   <div class="modal-mask">
     <div class="modal-wrapper">
       <div class="modal-container">
-        <b-button variant="outline-danger" class="button-close" @click="close()">X</b-button>
         <h3 class="header">{{ coinData.name.toUpperCase() }}</h3>
-        <h3 class="header-sub">YOU OWN {{ owned }}</h3>
-
-        <div class="button-group">
-          <b-button-group size="sm">
-            <b-button size="sm" :pressed.sync="option_buy" @click="toggleButton('buy')">BUY</b-button>
-            <b-button size="sm" :pressed.sync="option_sell" @click="toggleButton('sell')">SELL</b-button>
-          </b-button-group>
-        </div>
-
-        <div class="mt-2">AMOUNT: {{ amount }}</div>
-        <b-form-input id="range-1" v-model="amount" type="range" min="1" max="100"></b-form-input>
-        <span class="small-text">{{ profit_price }}: ${{ calcPrice() }} USD</span>
-
-        <b-button
-          :variant="option_buy ? 'outline-success' : 'outline-danger'"
-          class="button_purchase"
-          @click="pressButton()"
-        >{{ this.actionButton_text }}</b-button>
+        <b-button variant="outline-danger" class="button-close" @click="close()">X</b-button>
+        <h3 class="header-sub">Historical View</h3>
+        <chart :chartdata="historicalData" :options="chartOptions"/>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import Chart from "@/components/Chart.vue";
+
 export default {
-  name: "trade-popup",
+  name: "historical",
   props: ["coinData"],
+  components: {
+    Chart
+  },
   methods: {
     close() {
-      this.$parent.showPopup_trade = false;
+      this.$parent.showPopup_historical = false;
     },
     calcPrice() {
       return 59 * this.amount;
@@ -49,35 +38,32 @@ export default {
         this.profit_price = "PRICE";
       }
     },
-    pressButton() {
-      this.$store.dispatch("doTransaction", this.calcPrice());
-      this.$parent.showPopup_trade = false;
-
-      // Toast notification
-      let action = this.option_buy ? "PURCHASED" : "SOLD";
-      this.$toasted.global.purchase_complete({
-        message:
-          action +
-          " " +
-          this.amount +
-          " " +
-          this.coinData.name +
-          " for $" +
-          this.calcPrice()
-      });
+    fetchHistoricalData() {
+      console.log("Fetching historical data for " + this.coinData.name);
     }
   },
   data() {
     return {
-      show: false,
-      amount: "1",
-      owned: 7,
-      option_buy: true,
-      option_sell: false,
-      actionButton_text: "PURCHASE",
-      profit_price: "PROFIT",
-      button_variant: "outline-success"
+      historicalData: {
+        labels: ["January", "February", "March", "April", "May", "June", "July"],
+        datasets: [
+          {
+            label: "Data One",
+            backgroundColor: "#f87979",
+            data: [40, 20, 50, 43, 71, 12, 56]
+          }
+        ]
+      },
+      chartOptions: {
+          fill: false,
+          borderWidth: 7
+          
+      }
     };
+  },
+  mounted() {
+    // Grab data from API
+    this.historicalData = this.fetchHistoricalData();
   }
 };
 </script>
@@ -100,7 +86,7 @@ export default {
 }
 
 .modal-container {
-  width: 500px;
+  width: 800px;
   margin: 0px auto;
   padding: 30px 35px;
   background-color: #fff;
@@ -128,6 +114,7 @@ export default {
   font-size: 25px;
   font-family: "Overpass", sans-serif;
   color: #28a745;
+  display: inline-block;
 }
 .header-sub {
   font-size: 14px;

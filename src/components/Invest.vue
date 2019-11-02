@@ -9,7 +9,8 @@
         </div>
 
         <h3 class="simple-text head">Invest <span class="text-highlight">({{this.activeExchangeName}})</span></h3>
-        <trade-popup v-if="showPopup" :coinData="focusedCoin"></trade-popup>
+        <trade-popup v-if="showPopup_trade" :coinData="focusedCoin"></trade-popup>
+        <Historical v-if="showPopup_historical" :coinData="focusedCoin"></Historical>
 
         <div class="row">
         <b-table v-if="this.isDataReady"
@@ -23,6 +24,9 @@
                 <b-button size="sm" @click="trade(data.item)" class="mr-1 button-buy">
                     Trade
                 </b-button>
+                <b-button size="sm" @click="viewHistory(data.item)" class="mr-1 button-buy history">
+                    History
+                </b-button>
             </template>
         </b-table>
 
@@ -35,6 +39,7 @@
 
 <script>
 import TradePopup from "@/components/TradePopup.vue";
+import Historical from "@/components/Historical.vue";
 
 const axios = require('axios')
     export default {
@@ -42,7 +47,8 @@ const axios = require('axios')
         props: {
         },
         components: {
-            TradePopup
+            TradePopup,
+            Historical,
         },
         data () {
             return {
@@ -56,7 +62,8 @@ const axios = require('axios')
                 ],
                 isDataReady: false,
                 focusedCoin: "",
-                showPopup: false,
+                showPopup_trade: false,
+                showPopup_historical: false,
                 activeExchangeURL: this.$store.state.exchanges.a,
                 activeExchangeName: "",
                 exchange_a: true,
@@ -123,7 +130,11 @@ const axios = require('axios')
             trade(coin) {
                 console.log("investing for " + coin.symbol);
                 this.focusedCoin = coin;
-                this.showPopup = true;
+                this.showPopup_trade = true;
+            },
+            viewHistory(coin) {
+                this.focusedCoin = coin;
+                this.showPopup_historical = true;
             },
             switchExchange(exchange) {
                 if (exchange == 'a') {
@@ -194,6 +205,8 @@ const axios = require('axios')
       height: 40px;
       background-color: #05b169;
       border: none;
+      margin-bottom: 10px;
+      display: inline-block;
   }
     .button-buy:hover {
       background-color: #02995a;
@@ -206,5 +219,8 @@ const axios = require('axios')
   .text-highlight {
       font-size: 24px;
       color: #b18905;
+  }
+  .history {
+      background-color: #57bdec
   }
 </style>
