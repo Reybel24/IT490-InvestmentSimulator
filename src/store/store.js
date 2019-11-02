@@ -14,7 +14,7 @@ function getAccountDetails(type) {
             headers: { 'content-type': 'application/form-data' },
             data: {
                 type: 'account',
-                userID: '2',
+                userID: store.state.user_data.id,
             },
             url: store.state.url_backend_base + "testRabbitMQClient.php"
         };
@@ -22,6 +22,8 @@ function getAccountDetails(type) {
         // Send
         axios(options).then(response => {
             // Returned type of information asked for from the response array
+            console.log("type: " + type);
+            console.log(response.data.payload[type]);
             resolve(response.data.payload[type]);
         });
     })
@@ -34,7 +36,7 @@ function transaction(amt) {
             headers: { 'content-type': 'application/form-data' },
             data: {
                 type: 'transaction',
-                userID: 'testUserID_1',
+                userID: store.state.user_data.id,
                 amount: amt
             },
             url: store.state.url_backend_base + "testRabbitMQClient.php"
@@ -67,21 +69,67 @@ function testRequest() {
         });
     });
 }
+function getCurrencyWorth(symbol, exchange) {
+    return new Promise(function (resolve) {
+        // Send
+        axios(store.state.exchanges[exchange]).then(response => {
+            // Returned type of information asked for from the response array
+            resolve(response.data.payload[type]);
+        });
+    })
+}
+
+// Returns the current top crypto currencies
+function cryptoFetch_TopList(exchange) {
+    // Build url
+    // ex: https://min-api.cryptocompare.com/data/top/totalvolfull?limit=75&tsym=USD&e=LakeBTC
+    let _url = store.state.crypto_base_url +
+        "/top/totalvolfull?limit=75" +     // top list with limit
+        "&tsym=USD" +                      // currency
+        store.state.exchanges[exchange]
+
+    // New list to store data
+    let _list = [];
+
+    console.log("url: " + _url);
+
+    return new Promise(function (resolve) {
+        // Send
+        axios(_url).then(response => {
+            // Response. Format it nicely.
+            Object.keys(response.data.Data).map((key) => {
+                let item = {
+                    name: response.data.Data[key].CoinInfo.FullName,
+                    symbol: response.data.Data[key].CoinInfo.Name,
+                    value: response.data.Data[key].RAW.USD.PRICE,
+                    string_value: "$" + response.data.Data[key].RAW.USD.PRICE.toFixed(2),
+                    change: response.data.Data[key].RAW.USD.CHANGEPCT24HOUR,
+                    string_change: (response.data.Data[key].RAW.USD.CHANGEPCT24HOUR).toFixed(2) + "%",
+                };
+
+                // Add to list
+                _list.push(item);
+            });
+            resolve(_list);
+        })
+    });
+}
 
 export const store = new Vuex.Store({
     state: {
         url_backend_base: "http://localhost:3307/sim/back-end/",
         user_data: {
-            id: "",
+            id: "2",
             fullName: "",
-            balance: 500,
+            balance: 0,
             badge: "EXPERT INVESTOR",
             testData: ""
         },
+        crypto_base_url: "https://min-api.cryptocompare.com/data",
         exchanges: {
-            a: "https://min-api.cryptocompare.com/data/top/totalvolfull?limit=75&tsym=USD&e=Kraken",
-            b: "https://min-api.cryptocompare.com/data/top/totalvolfull?limit=75&tsym=USD&e=LakeBTC",
-            c: "https://min-api.cryptocompare.com/data/top/totalvolfull?limit=75&tsym=USD&e=Coinmate",
+            a: "&e=Kraken",
+            b: "&e=LakeBTC",
+            c: "&e=Coinmate",
         }
     },
     mutations: {
@@ -89,14 +137,14 @@ export const store = new Vuex.Store({
             //console.log("setting userID to: " + payload);
             state.user_data.fullName = payload;
         },
-        setBalance(state, payload) {
+        setUserBalance(state, payload) {
             //console.log("transaction: " + payload);
             state.user_data.balance = payload;
         },
         setTestData(state, payload) {
             //console.log("transaction: " + payload);
             state.user_data.testData = payload;
-        }
+        },
     },
     getters: {
         getUserBalance: state => {
@@ -114,10 +162,16 @@ export const store = new Vuex.Store({
                 commit('setUserFullName', response);
             })
         },
+        setUserBalance({ commit }) {
+            getAccountDetails("current_balance").then(response => {
+                // Update property
+                commit('setUserBalance', response);
+            })
+        },
         doTransaction({ commit }, amt) {
             transaction(amt).then(response => {
                 // Update property
-                commit('setBalance', response);
+                commit('setUserBalance', response);
             })
         },
         doTest({ commit }) {
@@ -126,6 +180,16 @@ export const store = new Vuex.Store({
                 console.log(response);
                 commit('setTestData', response);
             })
-        }
-    }
+        },
+        crypto_getTopList({ commit }, exchange) {
+            return new Promise(function (resolve) {
+                cryptoFetch_TopList(exchange).then(response => {
+                    resolve(response);
+                })
+            });
+        },
+    },
 })
+
+// Immedtaily grab current balance
+store.dispatch('setUserBalance');
