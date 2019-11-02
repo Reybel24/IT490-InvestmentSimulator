@@ -14,7 +14,7 @@ function getAccountDetails(type) {
             headers: { 'content-type': 'application/form-data' },
             data: {
                 type: 'account',
-                userID: 'testUserID_1',
+                userID: '2',
             },
             url: store.state.url_backend_base + "testRabbitMQClient.php"
         };
