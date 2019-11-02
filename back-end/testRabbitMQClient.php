@@ -31,6 +31,107 @@ $request = json_decode($request, false);
 
 // Temporarily run database queries here
 
+
+function createAccount($username,$password,$fname,$lname){
+
+    $db = mysqli_connect("127.0.0.1", "root", "12345", "homedb");
+    if (!$db) {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+
+    //Create new account
+    $sql= "INSERT INTO accounts (username, password , fname, lname)
+VALUES ('$username','$password','$fname','$lname')";
+
+if (mysqli_query($db, $sql)) {
+    echo "New record created successfully";
+
+} else {
+    echo "Error: " . $sql . "<br>" . mysqli_error($db);
+}
+
+mysqli_close($db);
+
+
+$db = mysqli_connect("127.0.0.1", "root", "12345", "homedb");
+    if (!$db) {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+
+
+$sql2= "SELECT * from accounts where username= '$username'";
+
+
+$result = mysqli_query($db, $sql2);
+
+if (mysqli_num_rows($result) > 0) {
+    while($row = mysqli_fetch_assoc($result)) {
+        
+        $userID=$row['userid'];
+        echo "$userID";
+    }
+}
+    else{
+         echo " No results";
+
+    }
+mysqli_close($db);
+
+
+
+$db = mysqli_connect("127.0.0.1", "root", "12345", "homedb");
+if (!$db) {
+    die("Connection failed: " . mysqli_connect_error());
+}
+
+//Inserts new row in Portfolio with userid from accounts table
+$sql3= "INSERT INTO portfolio(userid) 
+SELECT userid FROM accounts WHERE userid='$userID'";
+
+if (mysqli_query($db, $sql3)) {
+    echo "New record created successfully";
+
+
+} else {
+    echo "Error: " . $sql3 . "<br>" . mysqli_error($db);
+}
+
+mysqli_close($db);
+
+
+
+$db = mysqli_connect("127.0.0.1", "root", "12345", "homedb");
+if (!$db) {
+    die("Connection failed: " . mysqli_connect_error());
+}
+
+//Sets balance for new user to 500 dollars and portfolio value zero
+
+$sql4= "UPDATE portfolio SET available_balance= 500, portfolio_value=0
+WHERE userid= '$userID'";
+
+if (mysqli_query($db, $sql4)) {
+    echo "Balance added";
+
+} else {
+    echo "Error updating record: " . mysqli_error($db);
+}
+        return array(
+            "userID" => $userID,
+            "username" => $username,
+            "firstname"=> $fname,
+            "lastname"=>$lname,
+            "password" => $password,
+    );
+
+mysqli_close($db);
+}
+//TO test
+createAccount('user578','password','byy','byy');
+
+
+
+
 function getAccountDetails($userID)
 {
     //MUST CHANGE DATABASE CREDENTIALS
@@ -38,10 +139,14 @@ function getAccountDetails($userID)
     if (!$db) {
         die("Connection failed: " . mysqli_connect_error());
     }
+
     
     $sql= "SELECT accounts.userid, accounts.username, accounts.fname, accounts.lname, 
-    portfolio.available_balance 
-    FROM accounts LEFT JOIN portfolio on  accounts.userid = portfolio.portfolio_id 
+    portfolio.available_balance , investments.base_currency, investments.target_currency,
+    amount_invested
+    FROM accounts 
+    LEFT JOIN portfolio on accounts.userid = portfolio.userid 
+    LEFT JOIN investments on portfolio.portfolio_id = investments.portfolio_id
     WHERE accounts.userid='$userID'";
   
 
@@ -60,9 +165,14 @@ if (mysqli_num_rows($result) > 0) {
          "First name: " . $row["fname"].
         "Last Name: " . $row["lname"]. 
         "Balance " . $row["available_balance"]. 
+        "Currency " . $row["base_currency"]. 
+        "Target Currency " . $row["target_currency"]. 
+        "Invested" . $row["amount_invested"]. 
         "<br>";
 
-      
+
+
+
 // Variables for array
        $userID= $row['userid'];
         $username = $row['username'];
@@ -70,6 +180,9 @@ if (mysqli_num_rows($result) > 0) {
         $lname = $row['lname'];
         $fullname = $row['fname']." ".$row['lname'];
         $balance = $row['available_balance'];
+        $baseCurrency = $row['base_currency'];
+        $targerCurrency = $row['target_currency'];
+        $amtInvested = $row['amount_invested'];
 
     }
 }
@@ -78,20 +191,22 @@ else {
 }
     //Get account details from database and add to respoonse
     return array(
-        "fullName" => "$fullname",
-        "userID" => "$userID",
-        "username" => "$username",
-        "current_balance" => "$balance",
+        "fullName" => $fullname,
+        "userID" => $userID,
+        "username" => $username,
+        "current_balance" => $balance,
+        "base_currency" => $baseCurrency,
+        "target_currency" => $targetCurrency,
+        "amount_invested" => $amtInvested,
    
     );
 
  mysqli_close($db);
 
 }
-////To test
+// //To test
 // $data= getAccountDetails(1);
 // $data;
-
 
 
 
