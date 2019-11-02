@@ -37,7 +37,6 @@ export default {
   created() {
     // Subscribe to relevant events
     //this.$vueEventBus.$on('balance-updated', this.updateBalance);
-    // Display name
   },
   beforeDestroy() {
     // Unscubscribe events

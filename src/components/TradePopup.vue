@@ -14,8 +14,8 @@
         </div>
 
         <div class="mt-2">AMOUNT: {{ amount }}</div>
-        <b-form-input id="range-1" v-model="amount" type="range" min="1" max="100"></b-form-input>
-        <span class="small-text">{{ profit_price }}: ${{ calcPrice() }} USD</span>
+        <b-form-input id="range-1" v-model="amount" type="range" min="1" max="50"></b-form-input>
+        <span class="small-text">{{ profit_text }}: ${{ Math.round(this.price * 100) / 100 }} USD</span>
 
         <b-button
           :variant="option_buy ? 'outline-success' : 'outline-danger'"
@@ -36,21 +36,37 @@ export default {
       this.$parent.showPopup_trade = false;
     },
     calcPrice() {
-      return 59 * this.amount;
+      this.$store.dispatch("crypto_getPrice", [
+          this.$parent.activeExchange,
+          [this.coinData.symbol]
+        ]).then(response => {
+          let _price = response[0].price * this.amount;
+          //console.log("price: " + _price);
+          this.price = _price;
+        });
     },
     toggleButton(option) {
       if (option == "buy") {
+        this.option_buy = true;
         this.option_sell = false;
         this.actionButton_text = "PURCHASE";
-        this.profit_price = "PROFIT";
+        this.profit_text = "PROFIT";
       } else {
         this.option_buy = false;
+        this.option_sell = true;
         this.actionButton_text = "SELL";
-        this.profit_price = "PRICE";
+        this.profit_text = "PRICE";
       }
     },
     pressButton() {
-      this.$store.dispatch("doTransaction", this.calcPrice());
+      if (this.option_buy) {
+        // Subtract cash
+        this.$store.dispatch("doTransaction", -this.price);
+      } else {
+        // Add cash
+        this.$store.dispatch("doTransaction", this.price);
+      }
+
       this.$parent.showPopup_trade = false;
 
       // Toast notification
@@ -63,7 +79,7 @@ export default {
           " " +
           this.coinData.name +
           " for $" +
-          this.calcPrice()
+          this.price
       });
     }
   },
@@ -71,13 +87,32 @@ export default {
     return {
       show: false,
       amount: "1",
+      price: "",
       owned: 7,
       option_buy: true,
       option_sell: false,
       actionButton_text: "PURCHASE",
-      profit_price: "PROFIT",
-      button_variant: "outline-success"
-    };
+      profit_text: "PROFIT",
+      button_variant: "outline-success",
+      timer: "",
+    }
+  },
+  watch: {
+    amount: function(newVal) {
+      // Clear any previous timers
+      clearTimeout(this.timer);
+
+      this.timer = setTimeout(() =>
+        // Get new amount (using API)
+        this.calcPrice()
+      , 1500);
+    }
+  },
+  mounted() {
+    // Default
+    this.option_buy = true;
+    this.option_sell = false;
+    this.calcPrice();
   }
 };
 </script>

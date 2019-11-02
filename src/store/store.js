@@ -22,8 +22,8 @@ function getAccountDetails(type) {
         // Send
         axios(options).then(response => {
             // Returned type of information asked for from the response array
-            console.log("type: " + type);
-            console.log(response.data.payload[type]);
+            //console.log("type: " + type);
+            //console.log(response.data.payload[type]);
             resolve(response.data.payload[type]);
         });
     })
@@ -81,12 +81,13 @@ function getCurrencyWorth(symbol, exchange) {
 
 // Returns the current top crypto currencies
 function cryptoFetch_TopList(exchange) {
+
     // Build url
     // ex: https://min-api.cryptocompare.com/data/top/totalvolfull?limit=75&tsym=USD&e=LakeBTC
     let _url = store.state.crypto_base_url +
         "/top/totalvolfull?limit=75" +     // top list with limit
         "&tsym=USD" +                      // currency
-        store.state.exchanges[exchange]
+        store.state.exchanges[exchange]    // exchange
 
     // New list to store data
     let _list = [];
@@ -107,6 +108,46 @@ function cryptoFetch_TopList(exchange) {
                     string_change: (response.data.Data[key].RAW.USD.CHANGEPCT24HOUR).toFixed(2) + "%",
                 };
 
+                // Add to list
+                _list.push(item);
+            });
+            resolve(_list);
+        })
+    });
+}
+
+// Returns the current top crypto currencies
+function cryptoFetch_price(exchange, symbols) {
+    //console.log("syms:" + symbols);
+    // Format symbols nicely for URL
+    let formatted_symbols = "";
+    for (let i = 0; i < symbols.length; i++) {
+        formatted_symbols += symbols[i] + ',';
+    }
+    //console.log(formatted_symbols);
+
+    // Build url
+    // ex: https://min-api.cryptocompare.com/data/top/totalvolfull?limit=75&tsym=USD&e=LakeBTC
+    let _url = store.state.crypto_base_url +
+        "/pricemulti?fsyms=" +              // price, multi
+        formatted_symbols +                 // symbols
+        "&tsyms=USD" +                       // currency
+        store.state.exchanges[exchange]     // exchange
+
+    // New list to store data
+    let _list = [];
+
+    //console.log("url: " + _url);
+
+    return new Promise(function (resolve) {
+        // Send
+        axios(_url).then(response => {
+            // Response. Format it nicely.
+            Object.keys(response.data).map((key) => {
+                let item = {
+                    symbol: response.data[key],
+                    price: response.data[key].USD,
+                };
                 // Add to list
                 _list.push(item);
             });
@@ -184,6 +225,15 @@ export const store = new Vuex.Store({
         crypto_getTopList({ commit }, exchange) {
             return new Promise(function (resolve) {
                 cryptoFetch_TopList(exchange).then(response => {
+                    resolve(response);
+                })
+            });
+        },
+        crypto_getPrice({ commit }, op) {
+            return new Promise(function (resolve) {
+                //console.log("syms: " + op[1]);
+                cryptoFetch_price(op[0], op[1]).then(response => {
+                    //console.log(response);
                     resolve(response);
                 })
             });
