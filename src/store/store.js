@@ -34,7 +34,7 @@ function getAccountDetails(type) {
     })
 }
 
-function transaction(amt) {
+function transaction(base_currency, target_currency, coinAmount, amount) {
     return new Promise(function (resolve) {
         const options = {
             method: 'POST',
@@ -42,15 +42,25 @@ function transaction(amt) {
             data: {
                 type: 'transaction',
                 userID: store.state.user_data.id,
-                amount: amt
+                details: {
+                    base_currency: base_currency,
+                    target_currency: target_currency,
+                    coinAmount: coinAmount,
+                    amount: amount,
+                }
             },
             url: store.state.url_backend_base + "testRabbitMQClient.php"
         };
+
+        //console.log(base_currency);
+        //console.log(target_currency);
+        //console.log(amount);
 
         // Send
         axios(options).then(response => {
             //console.log("had enough for transaction: " + response.data.payload.wasSuccess);
             //console.log("transaction successful: " + response.data.payload.wasSuccess);
+            //console.log(response.data);
             resolve(response.data.payload.new_balance);
         });
     });
@@ -97,7 +107,7 @@ function cryptoFetch_TopList(exchange) {
     // New list to store data
     let _list = [];
 
-    console.log("url: " + _url);
+    //console.log("url: " + _url);
 
     return new Promise(function (resolve) {
         // Send
@@ -121,7 +131,7 @@ function cryptoFetch_TopList(exchange) {
     });
 }
 
-// Returns the current top crypto currencies
+// Returns the crypto price on specidfied exchange
 function cryptoFetch_price(exchange, symbols) {
     //console.log("syms:" + symbols);
     // Format symbols nicely for URL
@@ -161,6 +171,14 @@ function cryptoFetch_price(exchange, symbols) {
     });
 }
 
+function calcPortfolioValue(investments, currency) {
+    let _value = 0;
+    for (let i = 0; i < investments.length; i++) {
+        // Calculate value
+        _value = investments[i]
+    }
+}
+
 export const store = new Vuex.Store({
     state: {
         url_backend_base: "http://localhost:3307/sim/back-end/",
@@ -169,7 +187,8 @@ export const store = new Vuex.Store({
             fullName: "",
             balance: 0,
             badge: "EXPERT INVESTOR",
-            testData: ""
+            testData: "",
+            portfolioValue: "",
         },
         crypto_base_url: "https://min-api.cryptocompare.com/data",
         exchanges: {
@@ -214,8 +233,8 @@ export const store = new Vuex.Store({
                 commit('setUserBalance', response);
             })
         },
-        doTransaction({ commit }, amt) {
-            transaction(amt).then(response => {
+        doTransaction({ commit }, details) {
+            transaction(details.base_currency, details.target_currency, details.coinAmount, details.amount).then(response => {
                 // Update property
                 commit('setUserBalance', response);
             })
@@ -224,6 +243,8 @@ export const store = new Vuex.Store({
             return new Promise(function (resolve) {
                 getAccountDetails("investments").then(response => {
                     //console.log(response);
+                    // Calc portfolio value using investments
+                    calcPortfolioValue(response);
                     resolve(response);
                 })
             });
@@ -231,7 +252,7 @@ export const store = new Vuex.Store({
         doTest({ commit }) {
             testRequest().then(response => {
                 // Update property
-                console.log(response);
+                //console.log(response);
                 commit('setTestData', response);
             })
         },
@@ -242,10 +263,10 @@ export const store = new Vuex.Store({
                 })
             });
         },
-        crypto_getPrice({ commit }, op) {
+        crypto_getPrice({ commit }, details) {
             return new Promise(function (resolve) {
-                //console.log("syms: " + op[1]);
-                cryptoFetch_price(op[0], op[1]).then(response => {
+                //console.log("syms: " + details[1]);
+                cryptoFetch_price(details[0], details[1]).then(response => {
                     //console.log(response);
                     resolve(response);
                 })

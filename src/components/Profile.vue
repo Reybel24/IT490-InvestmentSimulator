@@ -22,6 +22,8 @@
       </b-card>
     </b-card-group>
 
+    <h4 class="loading" v-if="!this.isDataReady">JUST ONE SECOND...</h4>
+
     <div class="row table_investments">
       <b-table
         v-if="this.isDataReady"
@@ -29,8 +31,7 @@
         :fields="tableFields"
         :striped="true"
         :items="this.investmentData"
-      >
-      </b-table>
+      ></b-table>
     </div>
   </div>
 </template>
@@ -45,8 +46,9 @@ export default {
       isDataReady: false,
       tableFields: [
         { key: "base_currency", label: "Base Currency" },
+        { key: "amount_invested", label: "Wallet" },
         { key: "target_currency", label: "Target Currency" },
-        { key: "amount_invested", label: "Amount Invested" },
+        { key: "value", label: "Value" }
       ]
     };
   },
@@ -54,24 +56,88 @@ export default {
     clickMe() {
       this.$store.dispatch("doTest");
     },
+    calcWalletValue(target_currency, coins) {
+      //console.log(this.$store.state.exchanges['a']);
+
+      let self = this;
+      return new Promise(function(resolve) {
+        // Fetch price using default exchange (a)
+        self.$store
+          .dispatch("crypto_getPrice", ["a", coins, target_currency])
+          .then(response => {
+            //let _price = response[0].price;
+            //console.log(response[0].price);
+            resolve(response);
+          });
+      });
+    },
     showInvestments() {
       this.$store.dispatch("getInvestments").then(response => {
         this.investmentData = response;
-        console.log(this.investmentData);
+        //console.log(this.investmentData);
+
+        let _coins = [];
+        // Put coin symbols into array
+        for (let j = 0; j < this.investmentData.length; j++) {
+          _coins.push(this.investmentData[j].base_currency);
+        }
+
+        // Single API call for all coin values
+        let _valuaData = null;
+        this.calcWalletValue("USD", _coins).then(response => {
+          _valuaData = response;
+          //console.log("here");
+          //console.log(_valuaData);
+
+          // Assign values
+          for (let k = 0; k < this.investmentData.length; k++) {
+            console.log(_valuaData[k].symbol);
+            console.log(this.investmentData[k].base_currency);
+
+            Object.defineProperty(this.investmentData[k], "value", {
+              value:
+                Math.round(
+                  _valuaData[k].symbol.USD * this.investmentData[k].amount_invested * 100
+                ) / 100
+            });
+          }
+        });
+        /*
+          
+        */
+
+        /*
+        // Calculate values as new property
+        this.calcWalletValue(
+          this.investmentData[i].target_currency,
+          this.investmentData[i].base_currency
+        ).then(response => {
+          //console.log("hm price: " + response);
+          Object.defineProperty(this.investmentData[i], "value", {
+            value:
+              Math.round(
+                response * this.investmentData[i].amount_invested * 100
+              ) / 100
+          });
+        });
+*/
+
+        // Show table
+        //console.log(this.investmentData);
 
         /*
         for (let i = 0; i < this.investments.length; i++) {
           console.log(this.investments[i].target_currency);
         }
         */
-
-        // Show table
-        this.isDataReady = true;
       });
     }
   },
   created: function() {
     this.showInvestments();
+    // Very bad, but I give up. Just wait 2 seconds and hope the data is done loading from the
+    // API by then :/
+    setTimeout(() => (this.isDataReady = true), 1500);
   }
 };
 </script>
@@ -94,7 +160,14 @@ export default {
   margin-left: 50px;
 }
 .table_investments {
-    padding-left: 50px;
-    padding-top:30px;
+  padding-left: 50px;
+  padding-top: 30px;
+}
+.loading {
+  font-size: 24px;
+  font-family: "Overpass", sans-serif;
+  color: #28a745;
+  padding-left: 30px;
+  padding-top: 10px;
 }
 </style>

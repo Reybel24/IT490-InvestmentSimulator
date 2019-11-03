@@ -19,7 +19,12 @@
             <label for="input-valid">AMOUNT</label>
           </b-col>
           <b-col sm="9">
-            <b-form-input id="input-valid" v-model="userInput" :state="this.inputValid" placeholder="1.5"></b-form-input>
+            <b-form-input
+              id="input-valid"
+              v-model="userInput"
+              :state="this.inputValid"
+              placeholder="1.5"
+            ></b-form-input>
           </b-col>
         </b-row>
         <span class="small-text">{{ profit_text }}: ${{ Math.round(this.price * 100) / 100 }} USD</span>
@@ -73,7 +78,13 @@ export default {
         // Enough cash?
         if (this.$store.getters.haveEnough(this.price)) {
           // Make transaction
-          this.$store.dispatch("doTransaction", -this.price);
+          let _details = {
+            base_currency: this.coinData.symbol,
+            target_currency: "USD",
+            coinAmount: this.amount,
+            amount: -this.price
+          };
+          this.$store.dispatch("doTransaction", _details);
 
           // Close popup
           this.$parent.showPopup_trade = false;
@@ -89,7 +100,7 @@ export default {
               " " +
               this.coinData.name +
               " for $" +
-              this.price
+              Math.round(this.price * 100) / 100
           });
         } else {
           //console.log("Not enough money");
@@ -103,7 +114,13 @@ export default {
         // if (amt <= this.amount) { user can sell }
 
         // Selling, add cash as profit
-        this.$store.dispatch("doTransaction", this.price);
+        let _details = {
+            base_currency: this.coinData.symbol,
+            target_currency: "USD",
+            coinAmount: this.amount,
+            amount: this.price
+          };
+          this.$store.dispatch("doTransaction", _details);
 
         // Close popup
         this.$parent.showPopup_trade = false;
@@ -151,7 +168,7 @@ export default {
       button_variant: "outline-success",
       timer: "",
       userInput: "",
-      inputValid: null,
+      inputValid: null
     };
   },
   watch: {
@@ -170,8 +187,7 @@ export default {
       );
     }
   },
-  computed: {
-  },
+  computed: {},
   mounted() {
     // Default
     this.option_buy = true;
