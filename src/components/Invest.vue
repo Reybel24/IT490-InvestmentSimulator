@@ -143,8 +143,9 @@ const axios = require('axios')
 
                 this.getNameOfExchange(this.activeExchange);
             },
-            getNameOfExchange(url) {
+            getNameOfExchange(ex) {
                 // Very sloppy but oh well, it works...
+                let url = this.$store.state.exchanges[ex];
                 let end = url.length;
                 let name = "";
                 for (let i = end; i--; i >= 0) {
