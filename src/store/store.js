@@ -24,7 +24,12 @@ function getAccountDetails(type) {
             // Returned type of information asked for from the response array
             //console.log("type: " + type);
             //console.log(response.data.payload[type]);
-            resolve(response.data.payload[type]);
+            if (type == "all") {
+                //console.log(response);
+                resolve(response.data.payload);
+            } else {
+                resolve(response.data.payload[type]);
+            }
         });
     })
 }
@@ -160,7 +165,7 @@ export const store = new Vuex.Store({
     state: {
         url_backend_base: "http://localhost:3307/sim/back-end/",
         user_data: {
-            id: "2",
+            id: "1",
             fullName: "",
             balance: 0,
             badge: "EXPERT INVESTOR",
@@ -214,6 +219,14 @@ export const store = new Vuex.Store({
                 // Update property
                 commit('setUserBalance', response);
             })
+        },
+        getInvestments({ commit }) {
+            return new Promise(function (resolve) {
+                getAccountDetails("investments").then(response => {
+                    //console.log(response);
+                    resolve(response);
+                })
+            });
         },
         doTest({ commit }) {
             testRequest().then(response => {
