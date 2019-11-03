@@ -13,8 +13,15 @@
           </b-button-group>
         </div>
 
-        <div class="mt-2">AMOUNT: {{ amount }}</div>
-        <b-form-input id="range-1" v-model="amount" type="range" min="1" max="50"></b-form-input>
+        <!--<b-form-input id="range-1" v-model="amount" type="range" min="0" max="10" step="0.001"></b-form-input>-->
+        <b-row class="my-1">
+          <b-col sm="3">
+            <label for="input-valid">AMOUNT</label>
+          </b-col>
+          <b-col sm="9">
+            <b-form-input id="input-valid" v-model="userInput" :state="this.inputValid" placeholder="1.5"></b-form-input>
+          </b-col>
+        </b-row>
         <span class="small-text">{{ profit_text }}: ${{ Math.round(this.price * 100) / 100 }} USD</span>
 
         <b-button
@@ -45,6 +52,7 @@ export default {
           let _price = response[0].price * this.amount;
           //console.log("price: " + _price);
           this.price = _price;
+          this.setInputBox();
         });
     },
     toggleButton(option) {
@@ -52,12 +60,12 @@ export default {
         this.option_buy = true;
         this.option_sell = false;
         this.actionButton_text = "PURCHASE";
-        this.profit_text = "PROFIT";
+        this.profit_text = "PRICE";
       } else {
         this.option_buy = false;
         this.option_sell = true;
         this.actionButton_text = "SELL";
-        this.profit_text = "PRICE";
+        this.profit_text = "PROFIT";
       }
     },
     pressButton() {
@@ -113,23 +121,43 @@ export default {
             this.price
         });
       }
+    },
+    setInputBox() {
+      if (this.option_buy) {
+        // Is this purchase valid?
+        if (this.$store.getters.haveEnough(this.price)) {
+          //console.log("has enough");
+          this.inputValid = true;
+        } else {
+          //console.log("NOT enough. amount is " + this.amount + " and total is " + this.price);
+          this.inputValid = false;
+        }
+      } else if (this.option_sell) {
+        // Is this sell valid?
+        // check if user has enough to sell here  --
+      }
     }
   },
   data() {
     return {
       show: false,
-      amount: "1",
+      amount: "0",
       price: "",
       owned: 7,
       option_buy: true,
       option_sell: false,
       actionButton_text: "PURCHASE",
-      profit_text: "PROFIT",
+      profit_text: "PRICE",
       button_variant: "outline-success",
-      timer: ""
+      timer: "",
+      userInput: "",
+      inputValid: null,
     };
   },
   watch: {
+    userInput: function(newVal) {
+      this.amount = this.userInput;
+    },
     amount: function(newVal) {
       // Clear any previous timers
       clearTimeout(this.timer);
@@ -138,9 +166,11 @@ export default {
         () =>
           // Get new amount (using API)
           this.calcPrice(),
-        1500
+        1000
       );
     }
+  },
+  computed: {
   },
   mounted() {
     // Default
