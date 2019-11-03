@@ -4,7 +4,7 @@
       <router-link to="/profile">
       <div class="tab-button">
         <img class="tab-icon" src="@/assets/img/briefcase.png" />
-        <span class="tab-text">MY PROFILE</span>
+        <span class="tab-text">MY PORTFOLIO</span>
       </div>
       </router-link>
 
