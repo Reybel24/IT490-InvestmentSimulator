@@ -36,10 +36,12 @@ export default {
       this.$parent.showPopup_trade = false;
     },
     calcPrice() {
-      this.$store.dispatch("crypto_getPrice", [
+      this.$store
+        .dispatch("crypto_getPrice", [
           this.$parent.activeExchange,
           [this.coinData.symbol]
-        ]).then(response => {
+        ])
+        .then(response => {
           let _price = response[0].price * this.amount;
           //console.log("price: " + _price);
           this.price = _price;
@@ -60,27 +62,57 @@ export default {
     },
     pressButton() {
       if (this.option_buy) {
-        // Subtract cash
-        this.$store.dispatch("doTransaction", -this.price);
+        // Enough cash?
+        if (this.$store.getters.haveEnough(this.price)) {
+          // Make transaction
+          this.$store.dispatch("doTransaction", -this.price);
+
+          // Close popup
+          this.$parent.showPopup_trade = false;
+
+          // Success toast notification
+          // Toast notification
+          let action = "PURCHASED";
+          this.$toasted.global.purchase_complete({
+            message:
+              action +
+              " " +
+              this.amount +
+              " " +
+              this.coinData.name +
+              " for $" +
+              this.price
+          });
+        } else {
+          //console.log("Not enough money");
+          this.$toasted.global.fail({
+            message: "BALANCE TOO LOW"
+          });
+        }
       } else {
-        // Add cash
+        // Check if user has enough of this curreny here
+        // let amt = this.$store.dispath('checkUserCoinAmt', symbol);
+        // if (amt <= this.amount) { user can sell }
+
+        // Selling, add cash as profit
         this.$store.dispatch("doTransaction", this.price);
+
+        // Close popup
+        this.$parent.showPopup_trade = false;
+
+        // Toast notification
+        let action = "SOLD";
+        this.$toasted.global.purchase_complete({
+          message:
+            action +
+            " " +
+            this.amount +
+            " " +
+            this.coinData.name +
+            " for $" +
+            this.price
+        });
       }
-
-      this.$parent.showPopup_trade = false;
-
-      // Toast notification
-      let action = this.option_buy ? "PURCHASED" : "SOLD";
-      this.$toasted.global.purchase_complete({
-        message:
-          action +
-          " " +
-          this.amount +
-          " " +
-          this.coinData.name +
-          " for $" +
-          this.price
-      });
     }
   },
   data() {
@@ -94,18 +126,20 @@ export default {
       actionButton_text: "PURCHASE",
       profit_text: "PROFIT",
       button_variant: "outline-success",
-      timer: "",
-    }
+      timer: ""
+    };
   },
   watch: {
     amount: function(newVal) {
       // Clear any previous timers
       clearTimeout(this.timer);
 
-      this.timer = setTimeout(() =>
-        // Get new amount (using API)
-        this.calcPrice()
-      , 1500);
+      this.timer = setTimeout(
+        () =>
+          // Get new amount (using API)
+          this.calcPrice(),
+        1500
+      );
     }
   },
   mounted() {
