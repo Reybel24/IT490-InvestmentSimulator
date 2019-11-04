@@ -13,6 +13,7 @@
             logout() {
                 this.$store.dispatch('doLogout');
                 //this.$router.replace({ name: "login" });
+                this.$cookie.delete('authenticated'); // delete cookie
             }
         },
     }

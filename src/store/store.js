@@ -299,6 +299,14 @@ export const store = new Vuex.Store({
                 })
             });
         },
+        doAuthenticateWithCookie({ commit }, userID) {
+            // Set user ID for session
+            this.state.authenticated = true;
+            this.state.user_data.id = userID;
+            // Grab user details
+            store.dispatch('setUserBalance');
+            store.dispatch('setUserFullName');
+        },
         doLogout({ commit }) {
             this.state.authenticated = false;
             this.state.user_data.fullName = "";

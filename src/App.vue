@@ -45,7 +45,7 @@ export default {
   mounted() {
     //Taj
     if (!this.$store.state.authenticated) {
-        console.log("not authenticated");
+        //console.log("not authenticated");
         this.$router.replace({ name: "login" });
       }
   },
@@ -59,6 +59,15 @@ export default {
         autoHideDelay: 5000,
         appendToast: append
       });
+    }
+  },
+  created() {
+    // Cookie?
+    let cookie_auth = this.$cookie.get('authenticated');
+    if (cookie_auth) {
+      console.log("userID is " + cookie_auth);
+      this.$store.dispatch('doAuthenticateWithCookie', cookie_auth);
+      this.$router.replace({ name: "profile" });
     }
   }
 };

@@ -53,10 +53,10 @@ export default {
               //console.log("creds valid: " + response.success);
               if (response.success) {
                   // Send to home page
+                  this.$cookie.set('authenticated', response.userID, 1); // cookie, expires in one day
                   this.$router.replace({ name: "profile" });
               } else {
                   // Not successful
-
               }
           });
         };

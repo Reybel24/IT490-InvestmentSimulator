@@ -115,6 +115,9 @@ export default {
     // Very bad, but I give up. Just wait 2 seconds and hope the data is done loading from the
     // API by then :/
     setTimeout(() => (this.isDataReady = true), 1500);
+  },
+  mounted () {
+    //console.log("the cookie: " + this.$cookie.get('test'));
   }
 };
 </script>

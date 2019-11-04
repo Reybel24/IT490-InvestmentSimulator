@@ -18,6 +18,10 @@ Vue.use(Toasted, {
 Vue.use(VueRouter);
 const router = new VueRouter({mode: 'history', routes});
 
+// Cookie
+var VueCookie = require('vue-cookie');
+Vue.use(VueCookie);
+
 // Icon pack
 //library.add(faUserSecret)
 //Vue.component('font-awesome-icon', FontAwesomeIcon)
