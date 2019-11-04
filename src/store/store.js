@@ -56,6 +56,31 @@ function authenticateCredentials(_username, _password) {
     })
 }
 
+function registerNewUser(_firstName, _lastName, _username, _password) {
+    console.log("f name: " + _firstName);
+    return new Promise(function (resolve) {
+        // Prepare request
+        const options = {
+            method: 'POST',
+            headers: { 'content-type': 'application/form-data' },
+            data: {
+                type: 'register',
+                firstName: _firstName,
+                lastName: _lastName,
+                username: _username,
+                password: _password,
+            },
+            url: store.state.url_backend_base + "testRabbitMQClient.php"
+        };
+
+        // Send
+        axios(options).then(response => {
+            console.log(response);
+            resolve(response.data.payload);
+        });
+    })
+}
+
 function transaction(base_currency, target_currency, coinAmount, amount) {
     return new Promise(function (resolve) {
         const options = {
@@ -310,6 +335,16 @@ export const store = new Vuex.Store({
         doLogout({ commit }) {
             this.state.authenticated = false;
             this.state.user_data.fullName = "";
+        },
+        doRegister({ commit }, details) {
+            let self = this;
+            console.log(details[2]);
+            return new Promise(function (resolve) {
+                registerNewUser(details[0], details[1], details[2], details[3]).then(response => {
+                    console.log(response);
+                    resolve(response);
+                })
+            });
         },
         crypto_getTopList({ commit }, exchange) {
             return new Promise(function (resolve) {

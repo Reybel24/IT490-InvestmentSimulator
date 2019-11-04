@@ -38,81 +38,39 @@ function getDBCon() {
     return $db;
 }
 
-function createAccount($username, $password, $fname, $lname) {
+function createAccount($fname, $lname, $username, $password) {
 
-    $db = mysqli_connect("127.0.0.1", "root", "", "crypto_1");
-    if (!$db) {
-        die("Connection failed: ".mysqli_connect_error());
-    }
+    // Get database connection
+    $db = getDBCon();
 
-    //Create new account
-    $sql = "INSERT INTO accounts (username, password , fname, lname)
-    VALUES('$username', '$password', '$fname', '$lname')";
-
-    if (mysqli_query($db, $sql)) {
-        echo "New record created successfully";
-
-    } else {
-        echo "Error: ".$sql. "<br>".mysqli_error($db);
-    }
-
-    mysqli_close($db);
+    // Create new row in accounts table
+    $sql = "INSERT INTO accounts (userid, username, password , fname, lname)
+    VALUES(default, '$username', '$password', '$fname', '$lname')";
+    $result = mysqli_query($db, $sql);
 
 
-    $db = mysqli_connect("127.0.0.1", "root", "12345", "homedb");
-    if (!$db) {
-        die("Connection failed: ".mysqli_connect_error());
-    }
-
-
+    // Grab userid
+    $userID = null;
     $sql2 = "SELECT * from accounts where username= '$username'";
-
-
     $result = mysqli_query($db, $sql2);
-
     if (mysqli_num_rows($result) > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
-
             $userID = $row['userid'];
-            echo "$userID";
         }
     }
     else {
-        echo " No results";
+        //echo " No results";
 
     }
-    mysqli_close($db);
 
-
-
-    $db = mysqli_connect("127.0.0.1", "root", "12345", "homedb");
-    if (!$db) {
-        die("Connection failed: ".mysqli_connect_error());
-    }
-
-    //Inserts new row in Portfolio with userid from accounts table
-    $sql3 = "INSERT INTO portfolio(userid) 
-    SELECT userid FROM accounts WHERE userid = '$userID'";
-
-    if (mysqli_query($db, $sql3)) {
-        echo "New record created successfully";
-
-
-    } else {
-        echo "Error: ".$sql3. "<br>".mysqli_error($db);
-    }
+    // Inserts new row in Portfolio with userid from accounts table
+    $sql3 = "INSERT INTO portfolio (userid, portfolio_id, available_balance, portfolio_value) VALUES ('$userID', default, '750', '0')";
+    $result = mysqli_query($db, $sql3);
 
     mysqli_close($db);
-
-
-
-    $db = mysqli_connect("127.0.0.1", "root", "12345", "homedb");
-    if (!$db) {
-        die("Connection failed: ".mysqli_connect_error());
-    }
 
     //Sets balance for new user to 500 dollars and portfolio value zero
-
+    /*
     $sql4 = "UPDATE portfolio SET available_balance= 500, portfolio_value=0
     WHERE userid = '$userID'";
 
@@ -122,6 +80,8 @@ function createAccount($username, $password, $fname, $lname) {
     } else {
         echo "Error updating record: ".mysqli_error($db);
     }
+    */
+
     return array(
         "userID" => $userID,
         "username" => $username,
@@ -132,10 +92,6 @@ function createAccount($username, $password, $fname, $lname) {
 
     mysqli_close($db);
 }
-//TO test
-//createAccount('user578','password','byy','byy');
-
-
 
 
 function getAccountDetails($userID) {
@@ -354,7 +310,6 @@ function doLogin($username, $password) {
     );
 }
 
-
 function testQuery($userID) {
     //MUST CHANGE DATABASE CREDENTIALS       
     $db = mysqli_connect("127.0.0.1", "root", "12345", "homedb");
@@ -422,6 +377,12 @@ function requestProcessor($request) {
                 $returnCode = 0;
                 $message = "request recieved successfully";
                 $payload = doLogin($request -> username, $request -> password);
+                break;
+
+            case "register":
+                $returnCode = 0;
+                $message = "request recieved successfully";
+                $payload = createAccount($request -> firstName, $request -> lastName, $request -> username, $request -> password);
                 break;
 
             // Account details

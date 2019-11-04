@@ -25,6 +25,7 @@
           ></b-input>
         </b-input-group>
         <b-button variant="primary" v-on:click="login()">Login</b-button>
+        <b-button variant="primary" v-on:click="register()">Register</b-button>
       </div>
     </b-form>
   </div>
@@ -60,6 +61,9 @@ export default {
               }
           });
         };
+    },
+    register() {
+        this.$router.replace({ name: "register" });
     }
   },
 }
