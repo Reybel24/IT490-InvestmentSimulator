@@ -18,6 +18,10 @@ Vue.use(Toasted, {
 Vue.use(VueRouter);
 const router = new VueRouter({mode: 'history', routes});
 
+// Cookie
+var VueCookie = require('vue-cookie');
+Vue.use(VueCookie);
+
 // Icon pack
 //library.add(faUserSecret)
 //Vue.component('font-awesome-icon', FontAwesomeIcon)
@@ -39,7 +43,7 @@ let options = {
   type: "success",
   icon : 'ad',
   position: "bottom-right",
-  duration: 1500,
+  duration: 2500,
 };
 
 // Lets Register a Global Error Notification Toast.

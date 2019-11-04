@@ -1,6 +1,6 @@
 <template>
     <div id="container">
-        <router-link v-if="$parent.authenticated" class="logout" to="/login" v-on:click.native="$parent.logout()" replace>Logout</router-link>
+        <router-link v-if="$store.state.authenticated" class="logout" to="/login" v-on:click.native="logout()" replace>Logout</router-link>
     </div>
 </template>
 
@@ -8,7 +8,13 @@
     export default {
         name: 'top-bar',
         props: {
-            employees: Array,
+        },
+        methods: {
+            logout() {
+                this.$store.dispatch('doLogout');
+                //this.$router.replace({ name: "login" });
+                this.$cookie.delete('authenticated'); // delete cookie
+            }
         },
     }
 </script>

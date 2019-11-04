@@ -64,7 +64,7 @@ const axios = require('axios')
                 focusedCoin: "",
                 showPopup_trade: false,
                 showPopup_historical: false,
-                activeExchangeURL: this.$store.state.exchanges.a,
+                activeExchange: "a",
                 activeExchangeName: "",
                 exchange_a: true,
                 exchange_b: false,
@@ -72,30 +72,11 @@ const axios = require('axios')
             }
         },
         methods: {
-            pullData() {
-                let list = [];
-                axios.get(this.$parent.url).then(response => {
-                    console.log("pulling data from: " + this.activeExchangeURL);
-                    // Create object
-                    Object.keys(response.data.Data).map((key) => {
-                        let item = {
-                            name: response.data.Data[key].CoinInfo.FullName,
-                            symbol: response.data.Data[key].CoinInfo.Name,
-                            value: response.data.Data[key].RAW.USD.PRICE,
-                            string_value: "$" + response.data.Data[key].RAW.USD.PRICE.toFixed(2),
-                            change: response.data.Data[key].RAW.USD.CHANGEPCT24HOUR,
-                            string_change: (response.data.Data[key].RAW.USD.CHANGEPCT24HOUR).toFixed(2) + "%",
-                        };
-
-                        // Add to list
-                        list.push(item);
-                    })
-                });
-                return list;
-            },
             buildDataChart() {
-                this.responseData = this.pullData();
-                this.isDataReady = true;
+                this.$store.dispatch("crypto_getTopList", this.activeExchange).then(response => {
+                    this.responseData = response;
+                    this.isDataReady = true; 
+                });
             },
             info(item, index, button) {
                 this.infoModal.title = `Row index: ${index}`
@@ -154,16 +135,17 @@ const axios = require('axios')
                     this.exchange_b = false;
                     this.exchange_c = true;
                 }
-                this.activeExchangeURL = this.$store.state.exchanges[exchange]
-                console.log("switched to: " + this.activeExchangeURL);
+                this.activeExchange = exchange;
+                console.log("switched to: " + this.activeExchange);
 
                 // Refresh data
                 this.buildDataChart();
 
-                this.getNameOfExchange(this.activeExchangeURL);
+                this.getNameOfExchange(this.activeExchange);
             },
-            getNameOfExchange(url) {
+            getNameOfExchange(ex) {
                 // Very sloppy but oh well, it works...
+                let url = this.$store.state.exchanges[ex];
                 let end = url.length;
                 let name = "";
                 for (let i = end; i--; i >= 0) {
@@ -177,7 +159,7 @@ const axios = require('axios')
         },
         created: function () {
             this.buildDataChart();
-            this.getNameOfExchange(this.activeExchangeURL);
+            this.getNameOfExchange(this.activeExchange);
         }
     }
 </script>
