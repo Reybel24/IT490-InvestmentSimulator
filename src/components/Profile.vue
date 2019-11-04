@@ -18,9 +18,11 @@
         header="PORTFOLIO VALUE"
         class="text-center"
       >
-        <span class="value-text">${{ Math.round(this.portfolio_value * 100) / 100 }}</span>
+        <span class="value-text">{{ Math.round(this.portfolio_value * 100) / 100 }} ({{this.target_currency}})</span>
       </b-card>
     </b-card-group>
+
+    <b-form-select v-model="target_currency" :options="target_currency_dropdown" class="dropdown_currency"></b-form-select>
 
     <h4 class="loading" v-if="!this.isDataReady">JUST ONE SECOND...</h4>
 
@@ -42,6 +44,7 @@ export default {
   props: {},
   data() {
     return {
+      target_currency: 'USD',
       investmentData: null,
       isDataReady: false,
       portfolio_value: 0,
@@ -50,7 +53,16 @@ export default {
         { key: "amount_invested", label: "Wallet" },
         { key: "target_currency", label: "Target Currency" },
         { key: "value", label: "Value" }
-      ]
+      ],
+      target_currency_dropdown: [
+          { value: 'USD', text: 'USD' },
+          { value: 'EUR', text: 'EUR' },
+          { value: 'JPY', text: 'JPY' },
+          { value: 'GBP', text: 'GBP' },
+          { value: 'CAD', text: 'CAD' },
+          { value: 'AUD', text: 'AUD' },
+          { value: 'NZD', text: 'NZD' },
+        ]
     };
   },
   methods: {
@@ -64,7 +76,7 @@ export default {
       return new Promise(function(resolve) {
         // Fetch price using default exchange (a)
         self.$store
-          .dispatch("crypto_getPrice", ["a", coins, target_currency])
+          .dispatch("crypto_getPrice", ["default", coins, target_currency])
           .then(response => {
             //let _price = response[0].price;
             //console.log(response[0].price);
@@ -85,10 +97,10 @@ export default {
 
         // Single API call for all coin values
         let _valuaData = null;
-        this.calcWalletValue("USD", _coins).then(response => {
+        this.calcWalletValue(this.target_currency, _coins).then(response => {
           _valuaData = response;
           //console.log("here");
-          //console.log(_valuaData);
+          console.log(_valuaData);
 
           // Assign values
           this.portfolio_value = 0;
@@ -98,9 +110,16 @@ export default {
             //console.log(this.investmentData[k].base_currency);
 
             
-            wallet_value = _valuaData[k].symbol.USD * this.investmentData[k].amount_invested;
+            wallet_value = _valuaData[k].symbol[this.target_currency] * this.investmentData[k].amount_invested;
             this.portfolio_value = this.portfolio_value + wallet_value;
 
+            // Target currency
+            Object.defineProperty(this.investmentData[k], "target_currency", {
+              value:
+                this.target_currency,
+            });
+
+            // Calculated value
             Object.defineProperty(this.investmentData[k], "value", {
               value:
                 Math.round(wallet_value * 100) / 100
@@ -118,6 +137,18 @@ export default {
   },
   mounted () {
     //console.log("the cookie: " + this.$cookie.get('test'));
+  },
+  watch: {
+    target_currency: function() {
+      console.log("changed to: " + this.target_currency);
+      // Re-fetch list
+      this.isDataReady = false;
+
+      this.showInvestments();
+    // Very bad, but I give up. Just wait 2 seconds and hope the data is done loading from the
+    // API by then :/
+    setTimeout(() => (this.isDataReady = true), 1500);
+    },
   }
 };
 </script>
@@ -147,12 +178,17 @@ export default {
   font-size: 24px;
   font-family: "Overpass", sans-serif;
   color: #28a745;
-  padding-left: 30px;
-  padding-top: 10px;
+  padding-left: 35px;
+  padding-top: 30px;
 }
 .value-text {
     font-size: 22px;
     font-family: "Overpass", sans-serif;
     color: white;
+}
+.dropdown_currency {
+  width:50%;
+  margin-left: 35px;
+  margin-top:20px;
 }
 </style>

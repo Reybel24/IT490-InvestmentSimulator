@@ -51,7 +51,8 @@ export default {
       this.$store
         .dispatch("crypto_getPrice", [
           this.$parent.activeExchange,
-          [this.coinData.symbol]
+          [this.coinData.symbol],
+          "USD"
         ])
         .then(response => {
           let _price = response[0].price * this.amount;

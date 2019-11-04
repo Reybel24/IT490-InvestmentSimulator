@@ -179,7 +179,7 @@ function cryptoFetch_TopList(exchange) {
 }
 
 // Returns the crypto price on specidfied exchange
-function cryptoFetch_price(exchange, symbols) {
+function cryptoFetch_price(exchange, symbols, currency) {
     //console.log("syms:" + symbols);
     // Format symbols nicely for URL
     let formatted_symbols = "";
@@ -188,13 +188,15 @@ function cryptoFetch_price(exchange, symbols) {
     }
     //console.log(formatted_symbols);
 
+    let _exchange = (exchange == "default") ? "" : store.state.exchanges[exchange];
+
     // Build url
     // ex: https://min-api.cryptocompare.com/data/top/totalvolfull?limit=75&tsym=USD&e=LakeBTC
     let _url = store.state.crypto_base_url +
         "/pricemulti?fsyms=" +              // price, multi
         formatted_symbols +                 // symbols
-        "&tsyms=USD" +                       // currency
-        store.state.exchanges[exchange]     // exchange
+        "&tsyms=" + currency +              // currency
+        _exchange    // exchange
 
     // New list to store data
     let _list = [];
@@ -208,7 +210,8 @@ function cryptoFetch_price(exchange, symbols) {
             Object.keys(response.data).map((key) => {
                 let item = {
                     symbol: response.data[key],
-                    price: response.data[key].USD,
+                    price: response.data[key][currency],
+                    target_currency: currency,
                 };
                 // Add to list
                 _list.push(item);
@@ -356,7 +359,7 @@ export const store = new Vuex.Store({
         crypto_getPrice({ commit }, details) {
             return new Promise(function (resolve) {
                 //console.log("syms: " + details[1]);
-                cryptoFetch_price(details[0], details[1]).then(response => {
+                cryptoFetch_price(details[0], details[1], details[2]).then(response => {
                     //console.log(response);
                     resolve(response);
                 })
