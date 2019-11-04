@@ -325,7 +325,34 @@ function makeTransaction($userID, $trans_details) {
 
 // makeTransaction(1,100);
 
+function doLogin($username, $password) {
 
+    // Get database connection
+    $db = getDBCon();
+
+    $sql = "SELECT * from accounts Where username='$username' AND password='$password'";
+    $result = mysqli_query($db, $sql);
+
+    $success = false;
+    $userID = "";
+    $message = "";
+
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $userID = $row["userid"];
+            $success = true;
+        }
+    } else {
+        $message = "User does not exist.";
+    }
+
+    //Get account details from database and add to respoonse
+    return array(
+        'success' => $success,
+        'userID' => $userID,
+        'message' => $message,
+    );
+}
 
 
 function testQuery($userID) {
@@ -392,11 +419,9 @@ function requestProcessor($request) {
         switch ($request -> type) {
             // Authenticate
             case "login":
-                //echo "Login Request Sent...\n";
-                //$returnCode = 0;
-                $returnCode = doLogin($request -> username, $request -> password);
-                //echo $returnCode;
-                //return doLogin($request['username'],$request['password']);
+                $returnCode = 0;
+                $message = "request recieved successfully";
+                $payload = doLogin($request -> username, $request -> password);
                 break;
 
             // Account details
