@@ -1,8 +1,8 @@
 <template>
   <div id="app">
-    <top-bar v-if="authenticated"/>
-    <profile-banner v-if="authenticated"/>
-    <tabbed-nav v-if="authenticated"/>
+    <top-bar v-if="this.$store.state.authenticated"/>
+    <profile-banner v-if="this.$store.state.authenticated"/>
+    <tabbed-nav v-if="this.$store.state.authenticated"/>
 
     <router-view @authenticated="setAuthenticated"></router-view>
   </div>
@@ -15,8 +15,7 @@ import TabbedNav from "@/components/TabbedNav.vue";
 import Profile from "@/components/Profile.vue";
 import Invest from "@/components/Invest.vue";
 import Login from "@/components/Login.vue";
-import Register from '@/components/Register.vue';
-
+import Register from "@/components/Register.vue";
 
 const axios = require("axios");
 export default {
@@ -28,12 +27,12 @@ export default {
     Profile,
     Invest,
     Login,
-    Register,
+    Register
   },
   data() {
     return {
       msg: "Welcome to Your Vue.js App",
-      authenticated: true,
+      authenticated: false,
       mockAccount: {
         username: "testuser1",
         password: "pass",
@@ -44,27 +43,15 @@ export default {
     };
   },
   mounted() {
-
-//Taj  
-    if(this.accountCreate){
-      this.$router.replace({name: "register"});
-//Taj Added
-
-    if (!this.authenticated) {
-      this.$router.replace({ name: "login" });
-    }
-  }
-
-    // Get user data from database and set it locally
-    this.$store.dispatch('setUserFullName');
-
+    //Taj
+    if (!this.$store.state.authenticated) {
+        console.log("not authenticated");
+        this.$router.replace({ name: "login" });
+      }
   },
   methods: {
     setAuthenticated(status) {
       this.authenticated = status;
-    },
-    logout() {
-      this.authenticated = false;
     },
     makeToast() {
       this.$bvToast.toast(`This is toast number 5`, {
@@ -78,7 +65,7 @@ export default {
 </script>
 
 <style>
-@import url('https://fonts.googleapis.com/css?family=Overpass:400,800&display=swap');
+@import url("https://fonts.googleapis.com/css?family=Overpass:400,800&display=swap");
 #app-2 {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

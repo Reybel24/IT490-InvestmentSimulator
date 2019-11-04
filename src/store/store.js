@@ -34,6 +34,28 @@ function getAccountDetails(type) {
     })
 }
 
+function authenticateCredentials(_username, _password) {
+    return new Promise(function (resolve) {
+        // Prepare request
+        const options = {
+            method: 'POST',
+            headers: { 'content-type': 'application/form-data' },
+            data: {
+                type: 'login',
+                username: _username,
+                password: _password
+            },
+            url: store.state.url_backend_base + "testRabbitMQClient.php"
+        };
+
+        // Send
+        axios(options).then(response => {
+            //console.log(response);
+            resolve(response.data.payload);
+        });
+    })
+}
+
 function transaction(base_currency, target_currency, coinAmount, amount) {
     return new Promise(function (resolve) {
         const options = {
@@ -182,8 +204,9 @@ function calcPortfolioValue(investments, currency) {
 export const store = new Vuex.Store({
     state: {
         url_backend_base: "http://localhost:3307/sim/back-end/",
+        authenticated: false,
         user_data: {
-            id: "1",
+            id: null,
             fullName: "",
             balance: 0,
             badge: "EXPERT INVESTOR",
@@ -256,6 +279,30 @@ export const store = new Vuex.Store({
                 commit('setTestData', response);
             })
         },
+        doAuthenticate({ commit }, details) {
+            let self = this;
+            return new Promise(function (resolve) {
+                authenticateCredentials(details[0], details[1]).then(response => {
+                    let success = response.success;
+                    //console.log(self.state.authenticated);
+                    self.state.authenticated = (success) ? true : false;
+
+                    if (success) {
+                        // Set user ID for session
+                        self.state.user_data.id = response.userID;
+                        // Grab user details
+                        store.dispatch('setUserBalance');
+                        store.dispatch('setUserFullName');
+                        //console.log("user id is: " + response.userID);
+                    }
+                    resolve(response);
+                })
+            });
+        },
+        doLogout({ commit }) {
+            this.state.authenticated = false;
+            this.state.user_data.fullName = "";
+        },
         crypto_getTopList({ commit }, exchange) {
             return new Promise(function (resolve) {
                 cryptoFetch_TopList(exchange).then(response => {
@@ -274,6 +321,3 @@ export const store = new Vuex.Store({
         },
     },
 })
-
-// Immedtaily grab current balance
-store.dispatch('setUserBalance');

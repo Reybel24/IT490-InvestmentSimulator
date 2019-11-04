@@ -94,8 +94,8 @@ export default {
           this.portfolio_value = 0;
           let wallet_value = 0;
           for (let k = 0; k < this.investmentData.length; k++) {
-            console.log(_valuaData[k].symbol);
-            console.log(this.investmentData[k].base_currency);
+            //console.log(_valuaData[k].symbol);
+            //console.log(this.investmentData[k].base_currency);
 
             
             wallet_value = _valuaData[k].symbol.USD * this.investmentData[k].amount_invested;
