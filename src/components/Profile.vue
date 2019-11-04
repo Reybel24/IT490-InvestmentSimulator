@@ -9,7 +9,7 @@
         header="AVAILABLE BALANCE"
         class="col-sm-7 text-center card-stat"
       >
-        <span>$47.50</span>
+        <span class="value-text">${{ Math.round(this.$store.getters.getUserBalance * 100) / 100 }}</span>
       </b-card>
 
       <b-card
@@ -18,7 +18,7 @@
         header="PORTFOLIO VALUE"
         class="text-center"
       >
-        <span>$7.13</span>
+        <span class="value-text">${{ Math.round(this.portfolio_value * 100) / 100 }}</span>
       </b-card>
     </b-card-group>
 
@@ -44,6 +44,7 @@ export default {
     return {
       investmentData: null,
       isDataReady: false,
+      portfolio_value: 0,
       tableFields: [
         { key: "base_currency", label: "Base Currency" },
         { key: "amount_invested", label: "Wallet" },
@@ -90,15 +91,19 @@ export default {
           //console.log(_valuaData);
 
           // Assign values
+          this.portfolio_value = 0;
+          let wallet_value = 0;
           for (let k = 0; k < this.investmentData.length; k++) {
             console.log(_valuaData[k].symbol);
             console.log(this.investmentData[k].base_currency);
 
+            
+            wallet_value = _valuaData[k].symbol.USD * this.investmentData[k].amount_invested;
+            this.portfolio_value = this.portfolio_value + wallet_value;
+
             Object.defineProperty(this.investmentData[k], "value", {
               value:
-                Math.round(
-                  _valuaData[k].symbol.USD * this.investmentData[k].amount_invested * 100
-                ) / 100
+                Math.round(wallet_value * 100) / 100
             });
           }
         });
@@ -169,5 +174,10 @@ export default {
   color: #28a745;
   padding-left: 30px;
   padding-top: 10px;
+}
+.value-text {
+    font-size: 22px;
+    font-family: "Overpass", sans-serif;
+    color: white;
 }
 </style>
