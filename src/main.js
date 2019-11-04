@@ -43,7 +43,7 @@ let options = {
   type: "success",
   icon : 'ad',
   position: "bottom-right",
-  duration: 1500,
+  duration: 2500,
 };
 
 // Lets Register a Global Error Notification Toast.
