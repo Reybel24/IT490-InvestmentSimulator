@@ -107,34 +107,6 @@ export default {
             });
           }
         });
-        /*
-          
-        */
-
-        /*
-        // Calculate values as new property
-        this.calcWalletValue(
-          this.investmentData[i].target_currency,
-          this.investmentData[i].base_currency
-        ).then(response => {
-          //console.log("hm price: " + response);
-          Object.defineProperty(this.investmentData[i], "value", {
-            value:
-              Math.round(
-                response * this.investmentData[i].amount_invested * 100
-              ) / 100
-          });
-        });
-*/
-
-        // Show table
-        //console.log(this.investmentData);
-
-        /*
-        for (let i = 0; i < this.investments.length; i++) {
-          console.log(this.investments[i].target_currency);
-        }
-        */
       });
     }
   },
