@@ -4,7 +4,7 @@
       <div class="modal-container">
         <b-button variant="outline-danger" class="button-close" @click="close()">X</b-button>
         <h3 class="header">{{ coinData.name.toUpperCase() }}</h3>
-        <h3 class="header-sub">YOU OWN {{ owned }}</h3>
+        <h3 class="header-sub">YOU OWN {{ this.owned }}</h3>
 
         <div class="button-group">
           <b-button-group size="sm">
@@ -30,7 +30,7 @@
         <span class="small-text">{{ profit_text }}: ${{ Math.round(this.price * 100) / 100 }} USD</span>
 
         <b-button
-          :variant="option_buy ? 'outline-success' : 'outline-danger'"
+          :variant="option_buy ? 'outline-success' : 'outline-secondary'"
           class="button_purchase"
           @click="pressButton()"
         >{{ this.actionButton_text }}</b-button>
@@ -58,6 +58,7 @@ export default {
           //console.log("price: " + _price);
           this.price = _price;
           this.setInputBox();
+          this.canContinue = true;
         });
     },
     toggleButton(option) {
@@ -72,10 +73,20 @@ export default {
         this.actionButton_text = "SELL";
         this.profit_text = "PROFIT";
       }
+
+      // Refresh box
+      this.setInputBox();
     },
     pressButton() {
+      if (this.canContinue == false) {
+        this.$toasted.global.fail({
+            message: "Please wait a moment..."
+          });
+        return;
+      }
+
       if (this.option_buy) {
-        // Enough cash?
+        // Valid?
         if (this.$store.getters.haveEnough(this.price)) {
           // Make transaction
           let _details = {
@@ -110,17 +121,15 @@ export default {
         }
       } else {
         // Check if user has enough of this curreny here
-        // let amt = this.$store.dispath('checkUserCoinAmt', symbol);
-        // if (amt <= this.amount) { user can sell }
-
-        // Selling, add cash as profit
+        if (this.inputValid) {
+          // Selling, add cash as profit
         let _details = {
-            base_currency: this.coinData.symbol,
-            target_currency: "USD",
-            coinAmount: this.amount,
-            amount: this.price
-          };
-          this.$store.dispatch("doTransaction", _details);
+          base_currency: this.coinData.symbol,
+          target_currency: "USD",
+          coinAmount: -this.amount,
+          amount: this.price
+        };
+        this.$store.dispatch("doTransaction", _details);
 
         // Close popup
         this.$parent.showPopup_trade = false;
@@ -137,6 +146,7 @@ export default {
             " for $" +
             this.price
         });
+        }
       }
     },
     setInputBox() {
@@ -150,8 +160,12 @@ export default {
           this.inputValid = false;
         }
       } else if (this.option_sell) {
-        // Is this sell valid?
-        // check if user has enough to sell here  --
+        // Doe user have enough to sell?
+        if (this.amount <= this.owned) {
+          this.inputValid = true;
+        } else {
+          this.inputValid = false;
+        }
       }
     }
   },
@@ -160,7 +174,7 @@ export default {
       show: false,
       amount: "0",
       price: "",
-      owned: 7,
+      owned: 0,
       option_buy: true,
       option_sell: false,
       actionButton_text: "PURCHASE",
@@ -168,12 +182,14 @@ export default {
       button_variant: "outline-success",
       timer: "",
       userInput: "",
-      inputValid: null
+      inputValid: null,
+      canContinue: false,
     };
   },
   watch: {
     userInput: function(newVal) {
       this.amount = this.userInput;
+      this.canContinue = false;
     },
     amount: function(newVal) {
       // Clear any previous timers
@@ -188,6 +204,29 @@ export default {
     }
   },
   computed: {},
+  created() {
+    // Grab owned amount from database
+    let self = this;
+    this.$store.dispatch("getInvestments").then(response => {
+      this.investmentData = response;
+      let _symbol = "";
+      for (let i = 0; i < this.investmentData.length; i++) {
+        _symbol = this.investmentData[i].base_currency;
+        if (_symbol == this.coinData.symbol) {
+          // Owns some
+          let _resOwned = this.investmentData[i].amount_invested;
+          this.owned = _resOwned;
+          console.log("matched: " + _symbol + " and you own " + this.owned);
+
+          // Exit
+          break;
+        } else {
+          // Own 0
+          this.owned = 0;
+        }
+      }
+    });
+  },
   mounted() {
     // Default
     this.option_buy = true;
@@ -256,7 +295,7 @@ export default {
   float: right;
 }
 .button-close {
-  display: inline-block;
+  display: block;
   float: right;
 }
 </style>
