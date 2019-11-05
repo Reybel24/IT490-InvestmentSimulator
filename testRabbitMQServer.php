@@ -37,9 +37,9 @@ function requestProcessor($request)
 
     case "validate_session":
 			//return doValidate($request['sessionId']);
-		case "error_log":
-			echo "receiving error from ".$request['machine_name'];
-			$returnCode = writeLogMessage($request['time'], $request['machine_name'], $request['error_message']);
+		//case "error_log":
+			//echo "receiving error from ".$request['machine_name'];
+			//$returnCode = writeLogMessage($request['time'], $request['machine_name'], $request['error_message']);
 				//return doValidate($request['sessionId']);
   }
 
