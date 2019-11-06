@@ -50,7 +50,7 @@ function authenticateCredentials(_username, _password) {
 
         // Send
         axios(options).then(response => {
-            //console.log(response);
+            console.log(response);
             resolve(response.data.payload);
         });
     })
@@ -231,7 +231,9 @@ function calcPortfolioValue(investments, currency) {
 
 export const store = new Vuex.Store({
     state: {
-        url_backend_base: "http://localhost:3307/sim/back-end/",
+        // url_backend_base: "http://localhost:3307/sim/back-end/",
+        //url_backend_base: "http://25.44.117.162/sim/back-end/",
+        url_backend_base: "http://localhost/sim/back-end/",
         authenticated: false,
         user_data: {
             id: null,
