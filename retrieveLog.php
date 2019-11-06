@@ -8,7 +8,7 @@ require_once('rabbitMQLib.inc');
 function errorLogProcessor($errorLog)
 {
 	echo "received error log".PHP_EOL;
-	file_put_contents("home/tmp/funwitherrors.txt", $errorLog.PHP_EOL, FILE_USE_INCLUDE_PATH | FILE_APPEND);
+	file_put_contents("funwitherrors.txt", $errorLog.PHP_EOL, FILE_USE_INCLUDE_PATH | FILE_APPEND);
 
 }
 

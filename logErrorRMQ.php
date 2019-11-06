@@ -6,9 +6,9 @@ require_once('rabbitMQLib.inc');
 
 
 function logError($errorLog){
-  $client = new rabbitMQClient("testRabbitMQ.ini","testServer");
-  $machine_info = date("m-d-Y h:i:s", time())." "gethostname()." ".$errorLog.PHP_EOL;
-  file_put_contents("/home/tmp/funswitherrors.txt", $machine_info, FILE_USE_INCLUDE_PATH | FILE_APPEND);
+  $client = new rabbitMQClient("loggerRMQ.ini","testServer");
+  $machine_info = date("m-d-Y h:i:s", time())." ".gethostname()." ".$errorLog.PHP_EOL;
+  file_put_contents("funswitherrors.txt", $machine_info, FILE_USE_INCLUDE_PATH | FILE_APPEND);
 
   $response = $client->publish($machine_info);
 
