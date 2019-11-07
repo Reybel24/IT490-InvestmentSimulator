@@ -22,6 +22,7 @@ $request = json_decode($request, false);
 
 // Make connection as client
 $client = new rabbitMQClient("testRabbitMQ.ini", "testServer");
+// echo $client;
 
 // Send request to rabbit server where it will be recieved on
 // the other end of the "pipe" by testRabbitMQServer.php and
