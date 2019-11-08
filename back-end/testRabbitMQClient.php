@@ -1,5 +1,6 @@
-#!/usr/bin/php
 <?php
+#!/usr/bin/php
+
 // Don't touch this. Used for request.
 header("Access-Control-Allow-Origin:*");
 header("Access-Control-Allow-Methods:GET");
@@ -26,12 +27,13 @@ $request = json_decode($request, false);
 // Send request to rabbit server where it will be recieved on
 // the other end of the "pipe" by testRabbitMQServer.php and
 // read
-# $response = $client -> send_request($data);
-# print_r($response);
+
+// $response = $client -> send_request($data);
+// print_r($response);
 
 // Temporarily run database queries here
 function getDBCon() {
-    $db = mysqli_connect("127.0.0.1", "root", "", "crypto_1");
+    $db = mysqli_connect("127.0.0.1", "root", "12345", "homedb");
     if (!$db) {
         die("Connection failed: ".mysqli_connect_error());
     }
@@ -105,10 +107,7 @@ function getAccountDetails($userID) {
     $amtInvested = "";
 
     //MUST CHANGE DATABASE CREDENTIALS
-    $db = mysqli_connect("127.0.0.1", "root", "", "crypto_1");
-    if (!$db) {
-        die("Connection failed: ".mysqli_connect_error());
-    }
+    $db = getDBCon();
 
 
     $sql = "SELECT accounts.userid, accounts.username, accounts.fname, accounts.lname, 
