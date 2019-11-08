@@ -10,7 +10,8 @@ require_once('rabbitMQLib.inc');
 //require_once('login.php.inc');
 // Authentication
 function getDBCon() {
-    $db = mysqli_connect("127.0.0.1", "tricia", "12345", "trialrun2");
+    //$db = mysqli_connect("127.0.0.1", "tricia", "12345", "trialrun2");
+    $db = mysqli_connect("25.61.219.11", "root", "", "crypto_1");
     if (!$db) {
         die("Connection failed: ".mysqli_connect_error());
     }

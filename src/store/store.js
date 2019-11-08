@@ -45,6 +45,7 @@ function authenticateCredentials(_username, _password) {
                 username: _username,
                 password: _password
             },
+            timeout: 5000,
             url: store.state.url_backend_base + "testRabbitMQClient.php"
         };
 
