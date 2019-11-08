@@ -7,7 +7,7 @@ const axios = require('axios')
 
 // Helper functions
 function getAccountDetails(type) {
-    return new Promise(function (resolve) {
+    return new Promise(function(resolve) {
         // Prepare request
         const options = {
             method: 'POST',
@@ -35,7 +35,7 @@ function getAccountDetails(type) {
 }
 
 function authenticateCredentials(_username, _password) {
-    return new Promise(function (resolve) {
+    return new Promise(function(resolve) {
         // Prepare request
         const options = {
             method: 'POST',
@@ -48,9 +48,23 @@ function authenticateCredentials(_username, _password) {
             url: store.state.url_backend_base + "testRabbitMQClient.php"
         };
 
+
+
+
+        console.log(options);
+
+
+
         // Send
-        axios(options).then(response => {
-            //console.log(response);
+        // axios(options).then(response => {
+        //     //console.log(response);
+        //     resolve(response.data.payload);
+
+        //Response are not defined 
+        //Able to get a response in console doing this
+        axios(options).then(function(response) {
+            console.log(response);
+            //Still Doesn't work right here
             resolve(response.data.payload);
         });
     })
@@ -58,7 +72,7 @@ function authenticateCredentials(_username, _password) {
 
 function registerNewUser(_firstName, _lastName, _username, _password) {
     console.log("f name: " + _firstName);
-    return new Promise(function (resolve) {
+    return new Promise(function(resolve) {
         // Prepare request
         const options = {
             method: 'POST',
@@ -82,7 +96,7 @@ function registerNewUser(_firstName, _lastName, _username, _password) {
 }
 
 function transaction(base_currency, target_currency, coinAmount, amount) {
-    return new Promise(function (resolve) {
+    return new Promise(function(resolve) {
         const options = {
             method: 'POST',
             headers: { 'content-type': 'application/form-data' },
@@ -114,7 +128,7 @@ function transaction(base_currency, target_currency, coinAmount, amount) {
 }
 
 function testRequest() {
-    return new Promise(function (resolve) {
+    return new Promise(function(resolve) {
         const options = {
             method: 'POST',
             headers: { 'content-type': 'application/form-data' },
@@ -131,8 +145,9 @@ function testRequest() {
         });
     });
 }
+
 function getCurrencyWorth(symbol, exchange) {
-    return new Promise(function (resolve) {
+    return new Promise(function(resolve) {
         // Send
         axios(store.state.exchanges[exchange]).then(response => {
             // Returned type of information asked for from the response array
@@ -147,16 +162,16 @@ function cryptoFetch_TopList(exchange) {
     // Build url
     // ex: https://min-api.cryptocompare.com/data/top/totalvolfull?limit=75&tsym=USD&e=LakeBTC
     let _url = store.state.crypto_base_url +
-        "/top/totalvolfull?limit=75" +     // top list with limit
-        "&tsym=USD" +                      // currency
-        store.state.exchanges[exchange]    // exchange
+        "/top/totalvolfull?limit=75" + // top list with limit
+        "&tsym=USD" + // currency
+        store.state.exchanges[exchange] // exchange
 
     // New list to store data
     let _list = [];
 
     //console.log("url: " + _url);
 
-    return new Promise(function (resolve) {
+    return new Promise(function(resolve) {
         // Send
         axios(_url).then(response => {
             // Response. Format it nicely.
@@ -193,17 +208,17 @@ function cryptoFetch_price(exchange, symbols, currency) {
     // Build url
     // ex: https://min-api.cryptocompare.com/data/top/totalvolfull?limit=75&tsym=USD&e=LakeBTC
     let _url = store.state.crypto_base_url +
-        "/pricemulti?fsyms=" +              // price, multi
-        formatted_symbols +                 // symbols
-        "&tsyms=" + currency +              // currency
-        _exchange    // exchange
+        "/pricemulti?fsyms=" + // price, multi
+        formatted_symbols + // symbols
+        "&tsyms=" + currency + // currency
+        _exchange // exchange
 
     // New list to store data
     let _list = [];
 
     //console.log("url: " + _url);
 
-    return new Promise(function (resolve) {
+    return new Promise(function(resolve) {
         // Send
         axios(_url).then(response => {
             // Response. Format it nicely.
@@ -231,7 +246,8 @@ function calcPortfolioValue(investments, currency) {
 
 export const store = new Vuex.Store({
     state: {
-        url_backend_base: "http://localhost:3307/sim/back-end/",
+        //Include the whole url with the correct port and should work
+        url_backend_base: "http://localhost:80/sim/back-end/",
         authenticated: false,
         user_data: {
             id: null,
@@ -291,7 +307,7 @@ export const store = new Vuex.Store({
             })
         },
         getInvestments({ commit }) {
-            return new Promise(function (resolve) {
+            return new Promise(function(resolve) {
                 getAccountDetails("investments").then(response => {
                     //console.log(response);
                     // Calc portfolio value using investments
@@ -309,7 +325,7 @@ export const store = new Vuex.Store({
         },
         doAuthenticate({ commit }, details) {
             let self = this;
-            return new Promise(function (resolve) {
+            return new Promise(function(resolve) {
                 authenticateCredentials(details[0], details[1]).then(response => {
                     let success = response.success;
                     //console.log(self.state.authenticated);
@@ -342,7 +358,7 @@ export const store = new Vuex.Store({
         doRegister({ commit }, details) {
             let self = this;
             console.log(details[2]);
-            return new Promise(function (resolve) {
+            return new Promise(function(resolve) {
                 registerNewUser(details[0], details[1], details[2], details[3]).then(response => {
                     console.log(response);
                     resolve(response);
@@ -350,14 +366,14 @@ export const store = new Vuex.Store({
             });
         },
         crypto_getTopList({ commit }, exchange) {
-            return new Promise(function (resolve) {
+            return new Promise(function(resolve) {
                 cryptoFetch_TopList(exchange).then(response => {
                     resolve(response);
                 })
             });
         },
         crypto_getPrice({ commit }, details) {
-            return new Promise(function (resolve) {
+            return new Promise(function(resolve) {
                 //console.log("syms: " + details[1]);
                 cryptoFetch_price(details[0], details[1], details[2]).then(response => {
                     //console.log(response);
