@@ -39,8 +39,11 @@ function createAccount($fname, $lname, $username, $password) {
         //echo " No results";
     }
     // Inserts new row in Portfolio with userid from accounts table
-    $sql3 = "INSERT INTO portfolio (userid, portfolio_id, available_balance, portfolio_value) VALUES ('$userID', default, '750', '0')";
+    $sql3 = "INSERT INTO portfolio (userid, portfolio_id, available_balance) VALUES ('$userID', '$userID', '750')";
     $result = mysqli_query($db, $sql3);
+    if(!$result){
+      logError('query3 failed');
+    }
     mysqli_close($db);
     //Sets balance for new user to 500 dollars and portfolio value zero
     /*
@@ -74,7 +77,7 @@ function getAccountDetails($userID) {
     $db = getDBCon();
     $sql = "SELECT accounts.userid, accounts.username, accounts.fname, accounts.lname,
     portfolio.available_balance, investments.base_currency, investments.target_currency,
-        amount_investedd
+        amount_invested
     FROM accounts
     LEFT JOIN portfolio on accounts.userid = portfolio.userid
     LEFT JOIN investments on portfolio.portfolio_id = investments.portfolio_id
@@ -155,6 +158,7 @@ function getAccountDetails($userID) {
 function makeTransaction($userID, $trans_details) {
     // Get database connection
     $db = getDBCon();
+    //echo gettype($trans_details);
     // Query
     $sql = "SELECT * from portfolio Where userid='$userID'";
     $result = mysqli_query($db, $sql);
@@ -163,15 +167,15 @@ function makeTransaction($userID, $trans_details) {
             // Grab portfolio ID
             $portfolio_id = $row['portfolio_id'];
             $user_balance = $row['available_balance'];
-            $new_balance = $user_balance + $trans_details->amount;
+            $new_balance = $user_balance + $trans_details['amount'];
             $wasSuccess = true;
             $sql2 = "UPDATE portfolio SET available_balance= $new_balance
             WHERE userid = '$userID'";
             $result2 = mysqli_query($db, $sql2);
             // Coin
-            $coin_symbol = $trans_details->base_currency;
-            $coin_target = $trans_details->target_currency;
-            $coin_amount = $trans_details->coinAmount;
+            $coin_symbol = $trans_details['base_currency'];
+            $coin_target = $trans_details['target_currency'];
+            $coin_amount = $trans_details['coinAmount'];
             // Update investments
             // Check if row exists. If so, update it.
             $sql = "SELECT * from investments Where portfolio_id='$portfolio_id' AND base_currency='$coin_symbol'";
@@ -287,7 +291,7 @@ function requestProcessor($request) {
             case "error":
                 $returnCode = 0;
                 $message = "error occured while request was being processed";
-                $payload = logError($request['error']);
+                //$payload = logError($request['error']);
                 break;
             case "test":
                 $returnCode = 0;
