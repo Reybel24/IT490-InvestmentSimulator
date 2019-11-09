@@ -29,7 +29,7 @@ CREATE TABLE `accounts` (
   `fname` varchar(255) DEFAULT NULL,
   `lname` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`userid`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -38,7 +38,7 @@ CREATE TABLE `accounts` (
 
 LOCK TABLES `accounts` WRITE;
 /*!40000 ALTER TABLE `accounts` DISABLE KEYS */;
-INSERT INTO `accounts` VALUES (1,'user1','password','Pablo','Picasso'),(2,'user2','password','Joel','Bloom');
+INSERT INTO `accounts` VALUES (1,'user1','password','Pablo','Picasso'),(2,'user2','password','Joel','Bloom'),(3,'test','pass','test','test'),(4,'test','pass','test','test'),(5,'test','pass','test','test'),(6,'test','pass','test','test'),(7,'test','pass','test','test'),(8,'test','pass','test','test'),(9,'test','pass','test','test'),(10,'test','pass','test','test'),(11,'test','pass','test','test'),(12,'test','test','test','test'),(13,'test','test','test','test'),(14,'test','test','test','test'),(15,'test','test','test','test'),(16,'test','test','test','test'),(17,'test','test','test','test'),(18,'test','test','test','test'),(19,'test','test','test','test'),(20,'test','test','test','test'),(21,'test','test','test','test'),(22,'test','test','test','test'),(23,'test','test','test','test'),(24,'test','test','test','test'),(25,'test','test','test','test'),(26,'test','test','test','test'),(27,'test','test','test','test'),(28,'test','test','test','test'),(29,'test','test','test','test'),(30,'test','test','test','test'),(31,'test','test','test','test'),(32,'test','test','test','test'),(33,'test','test','test','test'),(34,'test','test','test','test'),(35,'test','test','test','test'),(36,'test','test','test','test'),(37,'test','test','test','test'),(38,'test','test','test','test'),(39,'test','test','test','test'),(40,'test','test','test','test'),(41,'test','test','test','test'),(42,'test','test','test','test'),(43,'test','test','test','test'),(44,'mandingo','password','man','dingo'),(45,'pacman','pacman','pacman','pacman'),(46,'pacwoman','password','pacwoman','pacwoman'),(47,'loop','password','loop','loop'),(48,'fruity','password','fruity','fruity'),(49,'why','password','why','why');
 /*!40000 ALTER TABLE `accounts` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -85,7 +85,7 @@ CREATE TABLE `investments` (
   PRIMARY KEY (`investment_id`),
   KEY `fk_portfolio_investments` (`portfolio_id`),
   CONSTRAINT `fk_portfolio_investments` FOREIGN KEY (`portfolio_id`) REFERENCES `portfolio` (`portfolio_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -94,7 +94,7 @@ CREATE TABLE `investments` (
 
 LOCK TABLES `investments` WRITE;
 /*!40000 ALTER TABLE `investments` DISABLE KEYS */;
-INSERT INTO `investments` VALUES (1,1,'BTC','USD',50.00);
+INSERT INTO `investments` VALUES (1,1,'BTC','USD',50.00),(2,1,'EOS','USD',4.00),(3,1,'LTC','USD',1.00),(4,1,'DASH','USD',1.00),(5,4,'XLM','USD',230.00),(6,4,'XMR','USD',10.00);
 /*!40000 ALTER TABLE `investments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -108,12 +108,11 @@ DROP TABLE IF EXISTS `portfolio`;
 CREATE TABLE `portfolio` (
   `userid` int(11) NOT NULL,
   `portfolio_id` int(11) NOT NULL AUTO_INCREMENT,
-  `available_balance` int(11) DEFAULT NULL,
-  `portfolio_value` int(11) DEFAULT NULL,
+  `available_balance` decimal(15,2) DEFAULT NULL,
   PRIMARY KEY (`portfolio_id`),
   KEY `fk_accounts_portfolio` (`userid`),
   CONSTRAINT `fk_accounts_portfolio` FOREIGN KEY (`userid`) REFERENCES `accounts` (`userid`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -122,7 +121,7 @@ CREATE TABLE `portfolio` (
 
 LOCK TABLES `portfolio` WRITE;
 /*!40000 ALTER TABLE `portfolio` DISABLE KEYS */;
-INSERT INTO `portfolio` VALUES (1,1,500,0),(2,2,500,0);
+INSERT INTO `portfolio` VALUES (1,1,355.00),(2,2,500.00),(44,3,750.00),(45,4,124.80),(46,5,750.00),(47,6,750.00),(45,7,124.80),(45,8,124.80),(45,9,124.80),(45,10,124.80),(48,48,750.00),(49,49,750.00);
 /*!40000 ALTER TABLE `portfolio` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -135,4 +134,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-10-27 20:27:09
+-- Dump completed on 2019-11-08 22:02:18
