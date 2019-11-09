@@ -74,7 +74,7 @@ function getAccountDetails($userID) {
     $db = getDBCon();
     $sql = "SELECT accounts.userid, accounts.username, accounts.fname, accounts.lname,
     portfolio.available_balance, investments.base_currency, investments.target_currency,
-        amount_invested
+        amount_investedd
     FROM accounts
     LEFT JOIN portfolio on accounts.userid = portfolio.userid
     LEFT JOIN investments on portfolio.portfolio_id = investments.portfolio_id
