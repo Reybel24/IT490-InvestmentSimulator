@@ -8,7 +8,7 @@ header("Access-Control-Allow-Credentials:true");
 require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
-//require_once('login.php.inc');
+require_once('logErrorRMQ.php');
 
 // Authentication
 function getDBCon() {
@@ -282,6 +282,12 @@ function requestProcessor($request) {
             // Session Validation
             case "validate_session":
                 //return doValidate($request['sessionId']);
+                break;
+            //Logging Errors
+            case "error":
+                $returnCode = 0;
+                $message = "error occured while request was being processed";
+                $payload = logError($request['error']);
                 break;
             case "test":
                 $returnCode = 0;

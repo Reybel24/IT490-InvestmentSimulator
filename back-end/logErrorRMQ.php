@@ -9,12 +9,12 @@ function logError($errorLog){
   $client = new rabbitMQClient("loggerRMQ.ini","testServer");
   $machine_info = date("m-d-Y h:i:s", time())." ".gethostname()." ".$errorLog.PHP_EOL;
 
-  //file_put_contents("funwitherrors.txt", $errorLog.PHP_EOL, FILE_USE_INCLUDE_PATH | FILE_APPEND);
+  
   $response = $client->publish($machine_info);
 
 }
 
-$errorMessage = $argv[1];
-logError($errorMessage);
+//$errorMessage = $argv[1];
+//logError($errorMessage);
 
 ?>
