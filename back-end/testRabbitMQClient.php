@@ -17,7 +17,7 @@ require_once('rabbitMQLib.inc');
 $request = file_get_contents('php://input');
 
 // Decode from JSON into object
-// $request = json_decode($request, false);
+$request = json_decode($request, true);
 // print_r($request);
 // echo 'hi';
 // Make connection as client
@@ -28,12 +28,7 @@ $client = new rabbitMQClient("testRabbitMQ.ini", "testServer");
 // read
 // echo $request;
 
-$arr = array("type" => "login",
-"username" => "user1",
-"password" => "password"
-);
-
-$response = $client -> send_request($arr);
+$response = $client -> send_request($request);
 $response = json_encode($response);
 print_r($response);
 ?>
