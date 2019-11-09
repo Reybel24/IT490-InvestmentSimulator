@@ -21,12 +21,20 @@ $request = json_decode($request, true);
 // print_r($request);
 // echo 'hi';
 // Make connection as client
-$client = new rabbitMQClient("testRabbitMQ.ini", "testServer");
+
+    $client = new rabbitMQClient("testRabbitMQ.ini", "testServer");
+
+
 
 // Send request to rabbit server where it will be recieved on
 // the other end of the "pipe" by testRabbitMQServer.php and
 // read
 // echo $request;
+
+$arr = array("type" => "login",
+"username" => "user1",
+"password" => "password"
+);
 
 $response = $client -> send_request($request);
 $response = json_encode($response);
