@@ -17,6 +17,7 @@ function getDBCon() {
         die("Connection failed: ".mysqli_connect_error());
     }
     return $db;
+}
 
 function createAccount($fname, $lname, $username, $password) {
     // Get database connection
