@@ -88,6 +88,15 @@ function authenticateCredentials(_username, _password) {
 
 // User registration
 function registerNewUser(_firstName, _lastName, _username, _password) {
+    // Local
+    if (store.state.env == 0) {
+        return new Promise(function (resolve) {
+            console.log("registering locally (but not really)")
+            resolve(store.state.mock_user);
+        });
+    }
+    
+    // Production
     return new Promise(function (resolve) {
         // Prepare request
         const options = {
@@ -298,10 +307,12 @@ function calcPortfolioValue(investments, currency) {
 // Creates a mock user for local development
 class MockUser {
     constructor(user) {
-        this.firstName = 'BoB';
+        this.firstName = 'Local';
+        this.lastname = 'User';
         this.fullName = 'Local User';
         this.userID = '555';
-        this.username = 'bobby';
+        this.username = 'pacman';
+        this.password = 'password';
         this.current_balance = 1873;
         this.investments = [
             {
@@ -442,7 +453,7 @@ export const store = new Vuex.Store({
             console.log(details[2]);
             return new Promise(function (resolve) {
                 registerNewUser(details[0], details[1], details[2], details[3]).then(response => {
-                    console.log(response);
+                    // console.log(response);
                     resolve(response);
                 })
             });
