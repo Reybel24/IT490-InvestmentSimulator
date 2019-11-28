@@ -5,8 +5,24 @@ import Vuex from 'vuex';
 Vue.use(Vuex);
 const axios = require('axios')
 
-// Helper functions
+// Get user details (name, balance, etc.)
 function getAccountDetails(type) {
+    // Local
+    if (store.state.env == 0) {
+        return new Promise(function (resolve) {
+            console.log("fetching user data locally")
+            // Create some mock data
+
+            if (type == "all") {
+                //console.log(response);
+                resolve(store.state.mock_user);
+            } else {
+                resolve(store.state.mock_user[type]);
+            }
+        });
+    }
+
+    // Production
     return new Promise(function (resolve) {
         // Prepare request
         const options = {
@@ -35,6 +51,19 @@ function getAccountDetails(type) {
 }
 
 function authenticateCredentials(_username, _password) {
+    // Local
+    if (store.state.env == 0) {
+        return new Promise(function (resolve) {
+            console.log("authenticating locally")
+            // Create some mock data
+            let mock_data = {
+                success: true
+            }
+            resolve(mock_data);
+        });
+    }
+
+    // Production
     return new Promise(function (resolve) {
         // Prepare request
         const options = {
@@ -57,8 +86,8 @@ function authenticateCredentials(_username, _password) {
     })
 }
 
+// User registration
 function registerNewUser(_firstName, _lastName, _username, _password) {
-    console.log("f name: " + _firstName);
     return new Promise(function (resolve) {
         // Prepare request
         const options = {
@@ -82,7 +111,43 @@ function registerNewUser(_firstName, _lastName, _username, _password) {
     })
 }
 
+// Invest: buy, sell
 function transaction(base_currency, target_currency, coinAmount, amount) {
+    // Local
+    if (store.state.env == 0) {
+        let _investments = store.state.mock_user.investments;
+        // Insert into mock database
+        let _exists = false;
+        // for (coin in store.state.mock_user.investments) {
+            for (let i = 0; i < _investments.length; i++) {
+            // console.log(_investments[i])
+            if (_investments[i].base_currency == base_currency) {
+                // Exists, update it
+                // console.log("updating coin bc it exists in db")
+                _investments[i].amount_invested += coinAmount;
+                _exists = true;
+            }
+        }
+        // Create new entry
+        if (!_exists) {
+            let _newInvestment = {
+                base_currency: base_currency,
+                target_currency: target_currency,
+                amount_invested: coinAmount
+            }
+            _investments.push(_newInvestment);
+            // console.log(_investments)
+            store.state.mock_user.investments = _investments;
+        }
+        return new Promise(function (resolve) {
+            console.log("making local transaction")
+            // console.log("amount being subtracted from " + store.state.mock_user.current_balance + " is " + amount);
+            store.state.mock_user.current_balance = store.state.mock_user.current_balance + amount;
+            resolve(store.state.mock_user.current_balance);
+        });
+    }
+
+    // Production
     return new Promise(function (resolve) {
         const options = {
             method: 'POST',
@@ -230,11 +295,40 @@ function calcPortfolioValue(investments, currency) {
     }
 }
 
+// Creates a mock user for local development
+class MockUser {
+    constructor(user) {
+        this.firstName = 'BoB';
+        this.fullName = 'Local User';
+        this.userID = '555';
+        this.username = 'bobby';
+        this.current_balance = 1873;
+        this.investments = [
+            {
+                base_currency: "BTC",
+                target_currency: "USD",
+                amount_invested: 29.09
+            },
+            {
+                base_currency: 'BCH',
+                target_currency: 'USD',
+                amount_invested: 3.52
+            },
+            {
+                base_currency: 'QTUM',
+                target_currency: 'USD',
+                amount_invested: 4
+            }
+        ]
+    }
+}
+
 export const store = new Vuex.Store({
     state: {
-        // url_backend_base: "http://localhost:3307/sim/back-end/",
+        env: 0, // set to '0' for local development to bypass rabbitmq and database, '1' for production
+        url_backend_base: "http://localhost:3307/sim/back-end/",
         //url_backend_base: "http://25.44.117.162/sim/back-end/",
-        url_backend_base: "http://localhost/sim/back-end/",
+        // url_backend_base: "http://localhost/sim/back-end/",
         authenticated: false,
         user_data: {
             id: null,
@@ -249,7 +343,8 @@ export const store = new Vuex.Store({
             a: "&e=Kraken",
             b: "&e=LakeBTC",
             c: "&e=Coinmate",
-        }
+        },
+        mock_user: new MockUser("Fin"),
     },
     mutations: {
         setUserFullName(state, payload) {

@@ -87,7 +87,7 @@ export default {
     showInvestments() {
       this.$store.dispatch("getInvestments").then(response => {
         this.investmentData = response;
-        //console.log(this.investmentData);
+        // console.log(this.investmentData);
 
         let _coins = [];
         // Put coin symbols into array
@@ -99,8 +99,7 @@ export default {
         let _valuaData = null;
         this.calcWalletValue(this.target_currency, _coins).then(response => {
           _valuaData = response;
-          //console.log("here");
-          console.log(_valuaData);
+          //console.log(_valuaData);
 
           // Assign values
           this.portfolio_value = 0;
@@ -118,9 +117,10 @@ export default {
               value:
                 this.target_currency,
             });
-
+            // console.log((this.investmentData[k]));
             // Calculated value
             Object.defineProperty(this.investmentData[k], "value", {
+              configurable: true,
               value:
                 Math.round(wallet_value * 100) / 100
             });
