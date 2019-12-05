@@ -12,58 +12,63 @@ require_once('logErrorRMQ.php');
 
 // Authentication
 function getDBCon() {
-    $db = mysqli_connect("127.0.0.1", "tricia", "12345", "trialrun2");
+    $db = mysqli_connect("127.0.0.1", "tricia", "12345", "trialrun3");
     if (!$db) {
         die("Connection failed: ".mysqli_connect_error());
     }
     return $db;
-}
 
 function createAccount($fname, $lname, $username, $password) {
     // Get database connection
     $db = getDBCon();
-    // Create new row in accounts table
-    $sql = "INSERT INTO accounts (userid, username, password , fname, lname)
-    VALUES(default, '$username', '$password', '$fname', '$lname')";
-    $result = mysqli_query($db, $sql);
-    // Grab userid
-    $userID = null;
-    $sql2 = "SELECT * from accounts where username= '$username'";
-    $result = mysqli_query($db, $sql2);
-    if (mysqli_num_rows($result) > 0) {
-        while ($row = mysqli_fetch_assoc($result)) {
-            $userID = $row['userid'];
-        }
+
+    //check if username is already registered in db
+    $getUsername = "SELECT username FROM accounts WHERE username = '$username'";
+    $usernameCheck = mysqli_query($db, $getUsername);
+    if(mysqli_num_rows($usernameCheck) > 0){
+        //username already exists; reject registration attempt; tell user that username is taken
+        return 0;
+        mysqli_close($db);
     }
-    else {
-        //echo " No results";
+    else{
+      //username does not exist; proceed to register account info
+      //hash user password
+      $hashword = password_hash($password, PASSWORD_DEFAULT);
+
+      //insert account information
+      $insertAccountInfo = "INSERT INTO accounts (userid, username, password , fname, lname)
+      VALUES(default, '$username', '$hashword', '$fname', '$lname')";
+      $registerAccount = mysqli_query($db, $insertAccountInfo);
+
+      //Grab userid
+      $userID = null;
+      $getUserID = "SELECT userid from accounts where username = '$username'";
+      $result = mysqli_query($db, $getUserID);
+      if (mysqli_num_rows($result) > 0) {
+          while ($row = mysqli_fetch_assoc($result)) {
+              $userID = $row['userid'];
+          }
+      }
+      // Inserts new row in Portfolio with userid from accounts table
+      $insertPortfolioInfo = "INSERT INTO portfolio (userid, portfolio_id, available_balance)
+      VALUES ('$userID', '$userID', '750')";
+      $createPortfolio = mysqli_query($db, $insertPortfolioInfo);
+      if(!$result){
+        logError('query3 failed');
+      }
+      mysqli_close($db);
+
+      return array(
+          "userID" => $userID,
+          "username" => $username,
+          "firstname"=> $fname,
+          "lastname"=> $lname,
+          "password" => $password,
+      );
+      mysqli_close($db);
     }
-    // Inserts new row in Portfolio with userid from accounts table
-    $sql3 = "INSERT INTO portfolio (userid, portfolio_id, available_balance) VALUES ('$userID', '$userID', '750')";
-    $result = mysqli_query($db, $sql3);
-    if(!$result){
-      logError('query3 failed');
-    }
-    mysqli_close($db);
-    //Sets balance for new user to 500 dollars and portfolio value zero
-    /*
-    $sql4 = "UPDATE portfolio SET available_balance= 500, portfolio_value=0
-    WHERE userid = '$userID'";
-    if (mysqli_query($db, $sql4)) {
-        echo "Balance added";
-    } else {
-        echo "Error updating record: ".mysqli_error($db);
-    }
-    */
-    return array(
-        "userID" => $userID,
-        "username" => $username,
-        "firstname"=> $fname,
-        "lastname"=> $lname,
-        "password" => $password,
-    );
-    mysqli_close($db);
 }
+
 function getAccountDetails($userID) {
     $username = "";
     $fname = "";
@@ -154,7 +159,7 @@ function getAccountDetails($userID) {
     );
     mysqli_close($db);
 }
-// Transaction
+
 function makeTransaction($userID, $trans_details) {
     // Get database connection
     $db = getDBCon();
@@ -204,14 +209,13 @@ function makeTransaction($userID, $trans_details) {
     );
     mysqli_close($db);
 }
-////To Test
-// makeTransaction(1,100);
 
 function doLogin($username, $password) {
     // Get database connection
     $db = getDBCon();
 
-    $sql = "SELECT * from accounts Where username='$username' AND password='$password'";
+
+    $sql = "SELECT userid, username, password FROM accounts WHERE username='$username'";//" AND password='$password'";
     $result = mysqli_query($db, $sql);
 
     $success = false;
@@ -221,7 +225,8 @@ function doLogin($username, $password) {
     if (mysqli_num_rows($result) > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
             $userID = $row["userid"];
-            $success = true;
+            $hashword = $row["password"];
+            $success = password_verify($password, $hashword);;
         }
     } else {
         $message = "User does not exist.";
@@ -234,20 +239,16 @@ function doLogin($username, $password) {
     );
 }
 
-
 function requestProcessor($request) {
-
     //echo ''.gettype($request).'\n';
     //print_r($request);
     //$request = json_decode($request, false);
-    //print_r($request);
+    print_r($request);
     //echo gettype($request);
     $returnCode = 0;
     $response = [];
     $message = "";
-    $payload = "empty";
-    // Is there a request type?
-    //echo 'hi'.$request['type'].'bye';
+    $payload = "empt";
     /*if (!isset($request['type'])) {
         echo "why are you here";
         $returnCode = "2";
@@ -283,14 +284,11 @@ function requestProcessor($request) {
                 $message = "request recieved successfully";
                 $payload = makeTransaction($request['userID'], $request['details']);
                 break;
-            // Session Validation
-            case "validate_session":
-                //return doValidate($request['sessionId']);
-                break;
+
             //Logging Errors
             case "error":
                 $returnCode = 0;
-                $message = "error occured while request was being processed";
+                //$message = "$request['msg']";
                 //$payload = logError($request['error']);
                 break;
             case "test":
@@ -311,7 +309,6 @@ function requestProcessor($request) {
     $testResponse = array("returnCode" => $returnCode, 'message'=> $message, 'payload' => $payload);
     return $testResponse;
 }
-
 
 
 // Listen for incoming data
