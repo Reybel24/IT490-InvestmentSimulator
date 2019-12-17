@@ -39,13 +39,66 @@ export default {
       }
     },
     fetchHistoricalData() {
-      console.log("Fetching historical data for " + this.coinData.name);
+      // console.log("Fetching historical data for " + this.coinData.name);
+
+      const today = new Date();
+      // console.log('current epoch time is: ' + now);
+
+      // Hold time + price pairs
+      let _history = [];
+
+      // Add today
+      // _history.push(now);
+
+      // Fill with last 7 days
+      for (let i = 0; i <= 3; i++) {
+        // Add last 7 days
+        let _date = new Date(today);
+        _date.setDate(_date.getDate() - i);
+
+        let _pointInTime = {};
+
+        // Day in normal english
+        _pointInTime.day = _date;
+
+        // Day in epoch
+        _pointInTime.epoch = this.dateToEpoch(_date);
+
+        // Add to history
+        _history.push(_pointInTime);
+      }
+
+      console.log(_history);
+
+      // Get price for every point in time
+      const forLoop = async _ => {
+        for (let item of _history) {
+          let _val = await this.$store.dispatch("crypto_getHistory", [_self.coinData.symbol, "USD", item.epoch]);
+          console.log('recieved ' + _val);
+        }
+      }
+      
+
+      // Show graph after data has been fetched
+      this.buildGraph();
+    },
+    buildGraph() {},
+    dateToEpoch(date) {
+      return date.getTime();
     }
   },
   data() {
     return {
       historicalData: {
-        labels: ["January", "February", "March", "April", "May", "June", "July"],
+        labels: [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July"
+        ],
         datasets: [
           {
             label: "Data One",
@@ -55,9 +108,8 @@ export default {
         ]
       },
       chartOptions: {
-          fill: false,
-          borderWidth: 7
-          
+        fill: false,
+        borderWidth: 7
       }
     };
   },

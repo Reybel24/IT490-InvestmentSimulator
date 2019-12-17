@@ -95,7 +95,7 @@ function registerNewUser(_firstName, _lastName, _username, _password) {
             resolve(store.state.mock_user);
         });
     }
-    
+
     // Production
     return new Promise(function (resolve) {
         // Prepare request
@@ -128,7 +128,7 @@ function transaction(base_currency, target_currency, coinAmount, amount) {
         // Insert into mock database
         let _exists = false;
         // for (coin in store.state.mock_user.investments) {
-            for (let i = 0; i < _investments.length; i++) {
+        for (let i = 0; i < _investments.length; i++) {
             // console.log(_investments[i])
             if (_investments[i].base_currency == base_currency) {
                 // Exists, update it
@@ -304,6 +304,27 @@ function calcPortfolioValue(investments, currency) {
     }
 }
 
+function cryptoFetch_history(symbol, currency, date) {
+
+    // Build url
+    // ex: https://min-api.cryptocompare.com/data/dayAvg?fsym=BTC&tsym=USD&toTs=1570579200
+    let _url = store.state.crypto_base_url +
+        "/dayAvg?" +                       // day average
+        "fsym=" + symbol +                 // symbol, can only do one at a time
+        "&tsym=" + currency +              // currency
+        "&toTs=" + date                 // epoch timestamp
+    // store.state.exchanges[exchange]    // exchange
+
+    console.log("url: " + _url);
+
+    return new Promise(function (resolve) {
+        // Send
+        axios(_url).then(response => {
+            resolve(response.data[currency])
+        });
+    });
+}
+
 // Creates a mock user for local development
 class MockUser {
     constructor(user) {
@@ -470,6 +491,15 @@ export const store = new Vuex.Store({
                 //console.log("syms: " + details[1]);
                 cryptoFetch_price(details[0], details[1], details[2]).then(response => {
                     //console.log(response);
+                    resolve(response);
+                })
+            });
+        },
+        crypto_getHistory({ commit }, details) {
+            return new Promise(function (resolve) {
+                console.log("history for : " + details[1]);
+                cryptoFetch_history(details[0], details[1], details[2]).then(response => {
+                    // console.log(response);
                     resolve(response);
                 })
             });
