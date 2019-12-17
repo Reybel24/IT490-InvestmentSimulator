@@ -20,6 +20,24 @@ export default {
   components: {
     Chart
   },
+  data() {
+    return {
+      historicalData: {
+        labels: [],
+        datasets: [
+          {
+            label: "Data One",
+            backgroundColor: "#f87979",
+            data: []
+          }
+        ]
+      },
+      chartOptions: {
+        fill: false,
+        borderWidth: 7
+      }
+    };
+  },
   methods: {
     close() {
       this.$parent.showPopup_historical = false;
@@ -51,7 +69,8 @@ export default {
       // _history.push(now);
 
       // Fill with last 7 days
-      for (let i = 0; i <= 3; i++) {
+      let _numDays = 4;
+      for (let i = 0; i <= _numDays; i++) {
         // Add last 7 days
         let _date = new Date(today);
         _date.setDate(_date.getDate() - i);
@@ -71,47 +90,41 @@ export default {
       console.log(_history);
 
       // Get price for every point in time
-      const forLoop = async _ => {
-        for (let item of _history) {
-          let _val = await this.$store.dispatch("crypto_getHistory", [_self.coinData.symbol, "USD", item.epoch]);
-          console.log('recieved ' + _val);
-        }
+      var _histData = this.historicalData;
+      let _promises = []
+      for (let item of _history) {
+        _promises.push(this.$store.dispatch("crypto_getHistory", [this.coinData.symbol, "USD", item.epoch]));
+        // console.log('recieved ' + _val);
       }
-      
 
-      // Show graph after data has been fetched
-      this.buildGraph();
+      Promise.all(_promises).then((values) => {
+          // console.log(values);
+
+          // Enter into list
+          for (let i = _numDays; i >= 0; i--) {
+            _history[i].value = values[i]
+          }
+
+          // console.log(_history);
+          // Show graph after data has been fetched
+          this.buildGraph(_history, _histData);
+          
+      })
+      
     },
-    buildGraph() {},
+    buildGraph(history, histData) {
+      console.log(history);
+      for (let i = 0; i < history.length; i++) {
+        // console.log(history[i].value);
+        // console.log('Inserting ' + history[i].day.getDate() + ' and ' + history[i].value);
+        histData.labels.push(history[i].day.getDate());
+        histData.datasets[0].data.push(history[i].value);
+      }
+      console.log(histData);
+    },
     dateToEpoch(date) {
       return date.getTime();
     }
-  },
-  data() {
-    return {
-      historicalData: {
-        labels: [
-          "January",
-          "February",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July"
-        ],
-        datasets: [
-          {
-            label: "Data One",
-            backgroundColor: "#f87979",
-            data: [40, 20, 50, 43, 71, 12, 56]
-          }
-        ]
-      },
-      chartOptions: {
-        fill: false,
-        borderWidth: 7
-      }
-    };
   },
   mounted() {
     // Grab data from API
