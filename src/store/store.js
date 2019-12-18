@@ -95,7 +95,7 @@ function registerNewUser(_firstName, _lastName, _username, _password) {
             resolve(store.state.mock_user);
         });
     }
-    
+
     // Production
     return new Promise(function (resolve) {
         // Prepare request
@@ -206,6 +206,7 @@ function testRequest() {
         });
     });
 }
+
 function getCurrencyWorth(symbol, exchange) {
     return new Promise(function (resolve) {
         // Send
@@ -218,22 +219,23 @@ function getCurrencyWorth(symbol, exchange) {
 
 // Returns the current top crypto currencies
 function cryptoFetch_TopList(exchange) {
-
-    // Build url
-    // ex: https://min-api.cryptocompare.com/data/top/totalvolfull?limit=75&tsym=USD&e=LakeBTC
-    let _url = store.state.crypto_base_url +
-        "/top/totalvolfull?limit=75" +     // top list with limit
-        "&tsym=USD" +                      // currency
-        store.state.exchanges[exchange]    // exchange
-
     // New list to store data
     let _list = [];
 
     //console.log("url: " + _url);
-
     return new Promise(function (resolve) {
+        // Prepare request
+        const options = {
+            method: 'POST',
+            headers: { 'content-type': 'application/form-data' },
+            data: {
+                type: 'fetchTopList',
+                exchange: store.state.exchanges[exchange]
+            },
+            url: store.state.url_dmz_base + "dmzClient.php"
+        };
         // Send
-        axios(_url).then(response => {
+        axios(options).then(response => {
             // Response. Format it nicely.
             Object.keys(response.data.Data).map((key) => {
                 let item = {
@@ -265,33 +267,36 @@ function cryptoFetch_price(exchange, symbols, currency) {
 
     let _exchange = (exchange == "default") ? "" : store.state.exchanges[exchange];
 
-    // Build url
-    // ex: https://min-api.cryptocompare.com/data/top/totalvolfull?limit=75&tsym=USD&e=LakeBTC
-    let _url = store.state.crypto_base_url +
-        "/pricemulti?fsyms=" +              // price, multi
-        formatted_symbols +                 // symbols
-        "&tsyms=" + currency +              // currency
-        _exchange    // exchange
-
-    // New list to store data
     let _list = [];
 
     //console.log("url: " + _url);
-
     return new Promise(function (resolve) {
+        // Prepare request
+        const options = {
+            method: 'POST',
+            headers: { 'content-type': 'application/form-data' },
+            data: {
+                type: 'fetchPrice',
+                exchange: store.state.exchanges[exchange],
+                formatted_symbols: formatted_symbols,
+                currency: currency
+
+            },
+            url: store.state.url_dmz_base + "dmzClient.php"
+        };
         // Send
-        axios(_url).then(response => {
-            // Response. Format it nicely.
-            Object.keys(response.data).map((key) => {
-                let item = {
-                    symbol: response.data[key],
-                    price: response.data[key][currency],
-                    target_currency: currency,
-                };
-                // Add to list
-                _list.push(item);
-            });
-            resolve(_list);
+        axios(options).then(response => {
+          // Response. Format it nicely.
+          Object.keys(response.data).map((key) => {
+              let item = {
+                  symbol: response.data[key],
+                  price: response.data[key][currency],
+                  target_currency: currency,
+              };
+              // Add to list
+              _list.push(item);
+          });
+          resolve(_list);
         })
     });
 }
@@ -340,6 +345,7 @@ export const store = new Vuex.Store({
         url_backend_base: "http://localhost:3307/sim/back-end/",
         //url_backend_base: "http://25.44.117.162/sim/back-end/",
         // url_backend_base: "http://localhost/sim/back-end/",
+        url_dmz_base: "http://25.44.117.162/sim/back-end/",
         authenticated: false,
         user_data: {
             id: null,
