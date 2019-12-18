@@ -5,10 +5,10 @@ header("Access-Control-Allow-Methods:GET");
 header("Access-Control-Allow-Header:Content-Type");
 header("Access-Control-Allow-Credentials:true");
 
-require_once('path.inc');
-require_once('get_host_info.inc');
-require_once('rabbitMQLib.inc');
-require_once('logErrorRMQ.php');
+require_once('../rabbitconfig/path.inc');
+require_once('../rabbitconfig/get_host_info.inc');
+require_once('../rabbitconfig/rabbitMQLib.inc');
+require_once('publishLog.php');
 
 // Authentication
 function getDBCon() {
