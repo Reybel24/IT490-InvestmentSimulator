@@ -5,9 +5,9 @@ header("Access-Control-Allow-Methods:GET");
 header("Access-Control-Allow-Header:Content-Type");
 header("Access-Control-Allow-Credentials:true");
 
-require_once('../rabbitconfig/path.inc');
-require_once('../rabbitconfig/get_host_info.inc');
-require_once('../rabbitconfig/rabbitMQLib.inc');
+require_once('path.inc');
+require_once('get_host_info.inc');
+require_once('rabbitMQLib.inc');
 require_once('publishLog.php');
 
 // Authentication
@@ -240,9 +240,6 @@ function doLogin($username, $password) {
 }
 
 function requestProcessor($request) {
-    //echo ''.gettype($request).'\n';
-    //print_r($request);
-    //$request = json_decode($request, false);
     print_r($request);
     //echo gettype($request);
     $returnCode = 0;
@@ -312,7 +309,7 @@ function requestProcessor($request) {
 
 
 // Listen for incoming data
-$server = new rabbitMQServer("testRabbitMQ.ini","testServer");
+$server = new rabbitMQServer("databaseRMQ.ini","testServer");
 
 // Process data
 $server->process_requests('requestProcessor');
