@@ -28,14 +28,15 @@ export default {
           {
             label: "Data One",
             backgroundColor: "#f87979",
-            data: []
+            data: [this.chartValues]
           }
         ]
       },
       chartOptions: {
         fill: false,
         borderWidth: 7
-      }
+      },
+      chartValues: [17, 19]
     };
   },
   methods: {
@@ -69,7 +70,7 @@ export default {
       // _history.push(now);
 
       // Fill with last 7 days
-      let _numDays = 4;
+      let _numDays = 2;
       for (let i = 0; i <= _numDays; i++) {
         // Add last 7 days
         let _date = new Date(today);
@@ -97,6 +98,7 @@ export default {
         // console.log('recieved ' + _val);
       }
 
+      // All promises have resolved
       Promise.all(_promises).then((values) => {
           // console.log(values);
 
@@ -108,18 +110,19 @@ export default {
           // console.log(_history);
           // Show graph after data has been fetched
           this.buildGraph(_history, _histData);
-          
       })
       
     },
     buildGraph(history, histData) {
       console.log(history);
+      let _dataSet = [];
       for (let i = 0; i < history.length; i++) {
         // console.log(history[i].value);
-        // console.log('Inserting ' + history[i].day.getDate() + ' and ' + history[i].value);
+        console.log('Inserting ' + history[i].day.getDate() + ' and ' + history[i].value);
         histData.labels.push(history[i].day.getDate());
-        histData.datasets[0].data.push(history[i].value);
+        _dataSet.push(history[i].value);
       }
+      histData.datasets.data = _dataSet
       console.log(histData);
     },
     dateToEpoch(date) {
@@ -129,6 +132,11 @@ export default {
   mounted() {
     // Grab data from API
     this.historicalData = this.fetchHistoricalData();
+  },
+  watch: {
+    historicalData () {
+      this.renderChart(this.chartValues, this.chartOptions);
+    }
   }
 };
 </script>
