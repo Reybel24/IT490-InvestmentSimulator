@@ -5,10 +5,10 @@ header("Access-Control-Allow-Methods:GET");
 header("Access-Control-Allow-Header:Content-Type");
 header("Access-Control-Allow-Credentials:true");
 
-require_once('../rabbitconfig/path.inc');
-require_once('../rabbitconfig/get_host_info.inc');
-require_once('../rabbitconfig/rabbitMQLib.inc');
-require_once('publishLog.php');
+require_once('path.inc');
+require_once('get_host_info.inc');
+require_once('rabbitMQLib.inc');
+//require_once('publishLog.php');
 
 $crypto_base_url="https://min-api.cryptocompare.com/data";
 
@@ -55,7 +55,7 @@ function requestProcessor($request) {
 }
 
 // Listen for incoming data
-$server = new rabbitMQServer("testRabbitMQ.ini","testServer");
+$server = new rabbitMQServer("dmzRMQ.ini","testServer");
 
 // Process data
 $server->process_requests('requestProcessor');
