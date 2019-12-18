@@ -31,9 +31,9 @@ function createAccount($fname, $lname, $username, $password) {
         mysqli_close($db);
     }
     else{
-      //username does not exist; proceed to register account info
-      //hash user password
+      //username does not exist; proceed to register account info //hash user password
       $hashword = password_hash($password, PASSWORD_DEFAULT);
+    }
 
       //insert account information
       $insertAccountInfo = "INSERT INTO accounts (userid, username, password , fname, lname)
