@@ -10,11 +10,22 @@ require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
 require_once('logErrorRMQ.php');
 
+// Turn off error reporting
+// error_reporting(E_ERROR);
+
 // Authentication
 function getDBCon() {
+    // Local database (master)
     $db = mysqli_connect("127.0.0.1", "tricia", "12345", "trialrun2");
     if (!$db) {
         die("Connection failed: ".mysqli_connect_error());
+        // Remote database (slave)
+        // $db = mysqli_connect("127.0.0.1", "tricia", "12345", "trialrun2");
+        
+
+
+        // Logging
+        // ---
     }
     return $db;
 }
