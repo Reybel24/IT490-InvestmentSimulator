@@ -10,15 +10,29 @@ require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
 //require_once('publishLog.php');
 
-$crypto_base_url="https://min-api.cryptocompare.com/data";
+//$crypto_base_url="https://min-api.cryptocompare.com/data";
 
-function cryptoFetch_TopList($crypto_base_url, $exchange) {
+function cryptoFetch_TopList($exchange) {
+    $crypto_base_url="https://min-api.cryptocompare.com/data";
     $request_url = $crypto_base_url."/top/totalvolfull?limit=75"."&tsym=USD".$exchange;
-    return $request_url;
+
+    $ch = curl_init($request_url);
+    curl_setopt($ch, CURLOPT_HEADER, FALSE);
+    $returnArray = curl_exec($ch);
+
+    return $returnArray;
 }
 
-function cryptoFetch_price($crypto_base_url, $exchange, $formatted_symbols, $currency) {
+function cryptoFetch_price($exchange, $formatted_symbols, $currency) {
+    $crypto_base_url="https://min-api.cryptocompare.com/data";
     $request_url = $crypto_base_url."/pricemulti?fsyms=".$formatted_symbols."&tsyms=".$currency.$exchange;
+
+    $ch = curl_init($request_url);
+    curl_setopt($ch, CURLOPT_HEADER, FALSE);
+    $returnArray = curl_exec($ch);
+
+    return $returnArray;
+
     return $request_url;
 }
 
@@ -52,6 +66,9 @@ function requestProcessor($request) {
             // do nothing
             break;
     }
+
+    $testResponse = array("returnCode" => $returnCode, 'message'=> $message, 'payload' => $payload);
+    return $testResponse;
 }
 
 // Listen for incoming data
