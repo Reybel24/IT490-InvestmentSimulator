@@ -58,6 +58,8 @@ export default {
                   this.$router.replace({ name: "profile" });
               } else {
                   // Not successful
+                  // Log error
+                  this.$store.dispatch("doLogError", "unsuccessful login. (" + this.input.username + ")");
               }
           });
         };

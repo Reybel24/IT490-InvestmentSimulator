@@ -114,6 +114,9 @@ export default {
       
     },
     buildGraph(history, histData) {
+      // Log error
+      this.$store.dispatch("doLogError", "no historical data graph found");
+
       console.log(history);
       let _dataSet = [];
       for (let i = 0; i < history.length; i++) {

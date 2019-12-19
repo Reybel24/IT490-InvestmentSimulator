@@ -325,6 +325,37 @@ function cryptoFetch_history(symbol, currency, date) {
     });
 }
 
+// Log errors
+function logError(message) {
+    // Local
+    if (store.state.env == 0) {
+        return new Promise(function (resolve) {
+            resolve('successful log');
+        });
+    }
+
+    // Production
+    return new Promise(function (resolve) {
+        // Prepare request
+        const options = {
+            method: 'POST',
+            headers: { 'content-type': 'application/form-data' },
+            data: {
+                type: 'error',
+                msg: message,
+            },
+            timeout: 5000,
+            url: store.state.url_backend_base + "testRabbitMQClient.php"
+        };
+
+        // Send
+        axios(options).then(response => {
+            console.log(response);
+            resolve(response.data.payload);
+        });
+    })
+}
+
 // Creates a mock user for local development
 class MockUser {
     constructor(user) {
@@ -357,7 +388,7 @@ class MockUser {
 
 export const store = new Vuex.Store({
     state: {
-        env: 0, // set to '0' for local development to bypass rabbitmq and database, '1' for production
+        env: 1, // set to '0' for local development to bypass rabbitmq and database, '1' for production
         url_backend_base: "http://localhost:3307/sim/back-end/",
         //url_backend_base: "http://25.44.117.162/sim/back-end/",
         // url_backend_base: "http://localhost/sim/back-end/",
@@ -478,6 +509,9 @@ export const store = new Vuex.Store({
                     resolve(response);
                 })
             });
+        },
+        doLogError({ commit }, message) {
+                logError(message);
         },
         crypto_getTopList({ commit }, exchange) {
             return new Promise(function (resolve) {
