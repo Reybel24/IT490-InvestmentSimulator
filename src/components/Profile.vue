@@ -2,12 +2,12 @@
   <div id="container">
     <h3 class="simple-text">YOUR PORTFOLIO</h3>
 
-    <b-card-group deck>
+    <b-card-group deck class="card-wrapper">
       <b-card
         bg-variant="success"
         text-variant="white"
         header="AVAILABLE BALANCE"
-        class="col-sm-7 text-center card-stat"
+        class="col-sm-10 text-center card-stat"
       >
         <span class="value-text">${{ Math.round(this.$store.getters.getUserBalance * 100) / 100 }}</span>
       </b-card>
@@ -16,7 +16,7 @@
         bg-variant="primary"
         text-variant="white"
         header="PORTFOLIO VALUE"
-        class="text-center"
+        class="col-sm-10 text-center card-stat"
       >
         <span class="value-text">{{ Math.round(this.portfolio_value * 100) / 100 }} ({{this.target_currency}})</span>
       </b-card>
@@ -167,8 +167,13 @@ export default {
   padding-top: 30px;
   font-family: "Muli", sans-serif;
 }
+.card-wrapper {
+  width: 100%;
+  margin-right: 0px;
+}
 .card-stat {
-  margin-left: 50px;
+  width: 90%;
+  margin-left:30px;
 }
 .table_investments {
   padding-left: 50px;

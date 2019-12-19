@@ -14,7 +14,7 @@
 
         <div class="row">
         <b-table v-if="this.isDataReady"
-            class="col-sm-7 table-index"
+            class="col-md-11 table-index"
             :fields="tableFields"
             :striped="true"
             :items="this.responseData"

@@ -56,13 +56,13 @@ export default {
 }
 .content {
   padding-left: 5%;
-  padding-top: 2%;
+  padding-top: 25px;
   font-family: 'Overpass', sans-serif;
 }
 .info-top {
   width: 70%;
   height: 30px;
-  border-bottom: 3px solid #52acd2;
+  
   padding-top: 5px;
   padding-bottom: 45px;
   margin-left: 170px;
@@ -71,6 +71,7 @@ export default {
 .name {
   color: white;
   font-size: 25px;
+  padding-right: 10px;
 }
 .badge {
   padding-top: 8px;
@@ -80,7 +81,7 @@ export default {
   height: 28px;
   background-color: #e3b04b;
   border-radius: 20px;
-  margin-left: 10px;
+  margin-left: 0px;
   margin-top: 0px;
   color: #8a6c31;
   font-size: 15px;
@@ -117,6 +118,7 @@ export default {
   box-shadow: 6px 8px #5555552e;
   border-radius: 7px;
   cursor: default;
+  margin-top: 14px;
 }
 .img-icon {
   width: 32px;

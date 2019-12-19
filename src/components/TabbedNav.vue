@@ -2,14 +2,14 @@
     <div id="container">
 
       <router-link to="/profile">
-      <div class="tab-button">
+      <div class="tab-button col-10 col-sm-10 col-lg-3">
         <img class="tab-icon" src="@/assets/img/briefcase.png" />
         <span class="tab-text">MY PORTFOLIO</span>
       </div>
       </router-link>
 
       <router-link to="/invest">
-      <div class="tab-button">
+      <div class="tab-button col-10 col-sm-10 col-lg-3">
         <img class="tab-icon" src="@/assets/img/stock.png" />
         <span class="tab-text">INVEST</span>
       </div>
@@ -29,21 +29,20 @@
 <style scoped>
   #container {
     width: 100%;
-    height: 100px;
     background-color: #f8f8f8;
     margin-top:10px;
     padding-left: 30px;
     padding-top: 24px;
   }
   .tab-button {
-    width: 220px;
     height: 50px;
     border-radius: 7px;
     cursor: pointer;
     border: dashed 4px #d5d5d5;
     display: inline-block;
-    margin-left: 35px;
+    margin-left: 1%;
     opacity: .5;
+    margin-bottom: 20px;
   }
   .tab-button:hover {
     opacity: 1;
