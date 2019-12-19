@@ -389,8 +389,8 @@ class MockUser {
 export const store = new Vuex.Store({
     state: {
         env: 1, // set to '0' for local development to bypass rabbitmq and database, '1' for production
-        url_backend_base: "http://localhost:3307/sim/back-end/",
-        //url_backend_base: "http://25.44.117.162/sim/back-end/",
+        // url_backend_base: "http://localhost:3307/sim/back-end/",
+        url_backend_base: "http://25.44.117.162/sim/back-end/",
         // url_backend_base: "http://localhost/sim/back-end/",
         authenticated: false,
         user_data: {
